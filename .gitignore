@@ -1,0 +1,8 @@
+.vs/
+Assembly-CSharp.csproj
+Builds/
+Library/
+Packages/
+Poker.sln
+Temp/
+obj/
