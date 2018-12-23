@@ -43,12 +43,6 @@ public struct Card
     }
 }
 
-/*
-        "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
-        "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
-        "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
-        "AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H"
-        */
 public class Cards : MonoBehaviour {
 
     private List<Card> Deck = new List<Card> {
@@ -64,7 +58,46 @@ public class Cards : MonoBehaviour {
         new Card(CardSuit.Spades, CardValue.Five),
         new Card(CardSuit.Spades, CardValue.Four),
         new Card(CardSuit.Spades, CardValue.Three),
-        new Card(CardSuit.Spades, CardValue.Two)
+        new Card(CardSuit.Spades, CardValue.Two),
+        new Card(CardSuit.Diamonds, CardValue.Ace),
+        new Card(CardSuit.Diamonds, CardValue.King),
+        new Card(CardSuit.Diamonds, CardValue.Queen),
+        new Card(CardSuit.Diamonds, CardValue.Jack),
+        new Card(CardSuit.Diamonds, CardValue.Ten),
+        new Card(CardSuit.Diamonds, CardValue.Nine),
+        new Card(CardSuit.Diamonds, CardValue.Eight),
+        new Card(CardSuit.Diamonds, CardValue.Seven),
+        new Card(CardSuit.Diamonds, CardValue.Six),
+        new Card(CardSuit.Diamonds, CardValue.Five),
+        new Card(CardSuit.Diamonds, CardValue.Four),
+        new Card(CardSuit.Diamonds, CardValue.Three),
+        new Card(CardSuit.Diamonds, CardValue.Two),
+        new Card(CardSuit.Hearts, CardValue.Ace),
+        new Card(CardSuit.Hearts, CardValue.King),
+        new Card(CardSuit.Hearts, CardValue.Queen),
+        new Card(CardSuit.Hearts, CardValue.Jack),
+        new Card(CardSuit.Hearts, CardValue.Ten),
+        new Card(CardSuit.Hearts, CardValue.Nine),
+        new Card(CardSuit.Hearts, CardValue.Eight),
+        new Card(CardSuit.Hearts, CardValue.Seven),
+        new Card(CardSuit.Hearts, CardValue.Six),
+        new Card(CardSuit.Hearts, CardValue.Five),
+        new Card(CardSuit.Hearts, CardValue.Four),
+        new Card(CardSuit.Hearts, CardValue.Three),
+        new Card(CardSuit.Hearts, CardValue.Two),
+        new Card(CardSuit.Clubs, CardValue.Ace),
+        new Card(CardSuit.Clubs, CardValue.King),
+        new Card(CardSuit.Clubs, CardValue.Queen),
+        new Card(CardSuit.Clubs, CardValue.Jack),
+        new Card(CardSuit.Clubs, CardValue.Ten),
+        new Card(CardSuit.Clubs, CardValue.Nine),
+        new Card(CardSuit.Clubs, CardValue.Eight),
+        new Card(CardSuit.Clubs, CardValue.Seven),
+        new Card(CardSuit.Clubs, CardValue.Six),
+        new Card(CardSuit.Clubs, CardValue.Five),
+        new Card(CardSuit.Clubs, CardValue.Four),
+        new Card(CardSuit.Clubs, CardValue.Three),
+        new Card(CardSuit.Clubs, CardValue.Two),
     };
 
     private int deal_card_id;

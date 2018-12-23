@@ -6,20 +6,15 @@ using UnityEngine.Networking;
 public class StackManager : NetworkBehaviour {
 
     //Stack Counts
-    [SerializeField] [SyncVar] private int Stack0;
-    [SerializeField] [SyncVar] private int Stack1;
-    [SerializeField] [SyncVar] private int Stack2;
-    [SerializeField] [SyncVar] private int Stack3;
-    [SerializeField] [SyncVar] private int Stack4;
-    [SerializeField] [SyncVar] private int Stack5;
-    [SerializeField] [SyncVar] private int Stack6;
-    [SerializeField] [SyncVar] private int Stack7;
-    [SerializeField] [SyncVar] private int Stack8;
-
-    // Use this for initialization
-    void Start () {
-		
-	}
+    [SyncVar] private int Stack0;
+    [SyncVar] private int Stack1;
+    [SyncVar] private int Stack2;
+    [SyncVar] private int Stack3;
+    [SyncVar] private int Stack4;
+    [SyncVar] private int Stack5;
+    [SyncVar] private int Stack6;
+    [SyncVar] private int Stack7;
+    [SyncVar] private int Stack8;
 
     public void SetStack(int ID, int ChipCount)
     {

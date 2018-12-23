@@ -21,36 +21,7 @@ public enum GameState
 
 public class GameManager : NetworkBehaviour {
 
-    public Cards Deck;
-
     private bool GameStart = false;
-
-    //Personal Cards
-    [SyncVar] private Card CardA0;
-    [SyncVar] private Card CardB0;
-    [SyncVar] private Card CardA1;
-    [SyncVar] private Card CardB1;
-    [SyncVar] private Card CardA2;
-    [SyncVar] private Card CardB2;
-    [SyncVar] private Card CardA3;
-    [SyncVar] private Card CardB3;
-    [SyncVar] private Card CardA4;
-    [SyncVar] private Card CardB4;
-    [SyncVar] private Card CardA5;
-    [SyncVar] private Card CardB5;
-    [SyncVar] private Card CardA6;
-    [SyncVar] private Card CardB6;
-    [SyncVar] private Card CardA7;
-    [SyncVar] private Card CardB7;
-    [SyncVar] private Card CardA8;
-    [SyncVar] private Card CardB8;
-
-    //Shared Cards
-    [SyncVar] private Card Card1;
-    [SyncVar] private Card Card2;
-    [SyncVar] private Card Card3;
-    [SyncVar] private Card Card4;
-    [SyncVar] private Card Card5;
 
     private GameState game_state;
 
@@ -59,12 +30,13 @@ public class GameManager : NetworkBehaviour {
     [SyncVar] private int current_bet;
     [SyncVar] private int dealer_id;
 
+    private CardManager card_manager;
+
     // Use this for initialization
     void Start () {
         num_registered = 0;
         game_state = GameState.PreGame;
-        ClearTable();
-
+        card_manager = GetComponent<CardManager>();
     }
 	
 	// Control Gameloop
@@ -76,7 +48,7 @@ public class GameManager : NetworkBehaviour {
         }
         if (game_state == GameState.Deal) {
             Debug.Log("Dealing Hands");
-            Deal();
+            card_manager.Deal();
             game_state = GameState.FirstBet;
         }
         if (game_state == GameState.FirstBet)
@@ -87,7 +59,7 @@ public class GameManager : NetworkBehaviour {
         if (game_state == GameState.Flop)
         {
             Debug.Log("Dealing Flop");
-            StartCoroutine(BurnAndFlop());
+            StartCoroutine(card_manager.BurnAndFlop());
             game_state = GameState.SecondBet;
         }
         if (game_state == GameState.SecondBet)
@@ -98,7 +70,7 @@ public class GameManager : NetworkBehaviour {
         if (game_state == GameState.Turn)
         {
             Debug.Log("Dealing Turn");
-            StartCoroutine(BurnAndTurn());
+            StartCoroutine(card_manager.BurnAndTurn());
             game_state = GameState.ThirdBet;
         }
         if (game_state == GameState.ThirdBet)
@@ -107,7 +79,7 @@ public class GameManager : NetworkBehaviour {
         }
         if (game_state == GameState.River)
         {
-            StartCoroutine(BurnAndRiver());
+            StartCoroutine(card_manager.BurnAndRiver());
             game_state = GameState.FourthBet;
         }
         if (game_state == GameState.FourthBet)
@@ -129,6 +101,10 @@ public class GameManager : NetworkBehaviour {
         return num_registered - 1;
     }
 
+    public int GetNumRegistered() {
+        return num_registered;
+    }
+
     public void StartGame() {
         GameStart = true;
     }
@@ -141,105 +117,4 @@ public class GameManager : NetworkBehaviour {
         current_pot += amt;
     }
 
-    public void Deal() {
-        for (int round = 1; round <= 2; round++)
-        {
-            for (int i = 0; i < num_registered; i++)
-            {
-                FileCard(Deck.GetTopCard(), i, round);
-            }
-        }
-    }
-
-    public string GetCard(int ID, int which)
-    {
-        switch (ID)
-        {
-            case 0:
-                return (which == 0) ? CardA0.String() : CardB0.String();
-            case 1:
-                return (which == 0) ? CardA1.String() : CardB1.String();
-        }
-        return "ERROR";
-    }
-
-    public string GetTableCard(int which)
-    {
-        switch (which)
-        {
-            case 1:
-                return Card1.String();
-            case 2:
-                return Card2.String();
-            case 3:
-                return Card3.String();
-            case 4:
-                return Card4.String();
-            case 5:
-                return Card5.String();
-        }
-        return "ERROR";
-    }
-
-    private void FileCard(Card card, int ID, int round) {
-        switch (ID)
-        {
-            case 0:
-                if (round == 1) { CardA0 = card; }
-                else CardB0 = card;
-                break;
-            case 1:
-                if (round == 1) { CardA1 = card; }
-                else CardB1 = card;
-                break;
-        }
-    }
-
-    private void ClearTable() {
-        Card1 = Deck.GetBlankCard();
-        Card2 = Deck.GetBlankCard();
-        Card3 = Deck.GetBlankCard();
-        Card4 = Deck.GetBlankCard();
-        Card5 = Deck.GetBlankCard();
-    }
-
-    //~~~~~~~~~~~~~~Stage Coroutines~~~~~~~~~~~~//
-
-    private IEnumerator BurnAndFlop() {
-        //Burn
-        Card burn = Deck.GetTopCard();
-        Debug.Log("Burning " + burn.String());
-        yield return new WaitForSeconds(1f);
-        //Deal
-        Card1 = Deck.GetTopCard();
-        Debug.Log("Dealing 1: " + Card1.String());
-        yield return new WaitForSeconds(1f);
-        Card2 = Deck.GetTopCard();
-        Debug.Log("Dealing 2: " + Card2.String());
-        yield return new WaitForSeconds(1f);
-        Card3 = Deck.GetTopCard();
-        Debug.Log("Dealing 3: " + Card3.String());
-    }
-
-    private IEnumerator BurnAndTurn()
-    {
-        //Burn
-        Card burn = Deck.GetTopCard();
-        Debug.Log("Burning " + burn.String());
-        yield return new WaitForSeconds(1f);
-        //Deal
-        Card4 = Deck.GetTopCard();
-        Debug.Log("Dealing 4: " + Card4.String());
-    }
-
-    private IEnumerator BurnAndRiver()
-    {
-        //Burn
-        Card burn = Deck.GetTopCard();
-        Debug.Log("Burning " + burn.String());
-        yield return new WaitForSeconds(1f);
-        //Deal
-        Card5 = Deck.GetTopCard();
-        Debug.Log("Dealing 5: " + Card5.String());
-    }
 }

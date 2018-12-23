@@ -36,6 +36,7 @@ public class Player : NetworkBehaviour {
 
     private GameManager game_manager;
     private StackManager stack_manager;
+    private CardManager card_manager;
 
     public bool getcards = false;
 
@@ -43,6 +44,7 @@ public class Player : NetworkBehaviour {
     void Start() {
         game_manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         stack_manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<StackManager>();
+        card_manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CardManager>();
         
         PotText = Canvas.transform.Find("Pot").GetComponent<Text>();
         ChipText = Canvas.transform.Find("My Stack").GetComponent<Text>();
@@ -116,9 +118,6 @@ public class Player : NetworkBehaviour {
         cardB = "";
     }
 
-    //~~~~~~~~~~~~~GETTERS~~~~~~~~~~~~~~//
-
-
     //~~~~~~~~~~~~~UI UPDATES~~~~~~~~~~~~~~//
 
     private void UpdateUI() {
@@ -138,17 +137,17 @@ public class Player : NetworkBehaviour {
     }
 
     private void UpdateCardUI() {
-        CardAtext.text = game_manager.GetCard(ID, 0);
-        CardBtext.text = game_manager.GetCard(ID, 1);
+        CardAtext.text = card_manager.GetCard(ID, 0);
+        CardBtext.text = card_manager.GetCard(ID, 1);
     }
 
     private void UpdateTableCardsUI()
     {
-        Card1text.text = game_manager.GetTableCard(1);
-        Card2text.text = game_manager.GetTableCard(2);
-        Card3text.text = game_manager.GetTableCard(3);
-        Card4text.text = game_manager.GetTableCard(4);
-        Card5text.text = game_manager.GetTableCard(5);
+        Card1text.text = card_manager.GetTableCard(1);
+        Card2text.text = card_manager.GetTableCard(2);
+        Card3text.text = card_manager.GetTableCard(3);
+        Card4text.text = card_manager.GetTableCard(4);
+        Card5text.text = card_manager.GetTableCard(5);
     }
 
     private void UpdateTableStacks()
