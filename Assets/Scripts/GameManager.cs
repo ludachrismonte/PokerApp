@@ -51,15 +51,13 @@ public class GameManager : NetworkBehaviour {
     [SyncVar] private Card Card3;
     [SyncVar] private Card Card4;
     [SyncVar] private Card Card5;
-    
+
     private GameState game_state;
 
     [SyncVar] private int num_registered;
     [SyncVar] private int current_pot;
     [SyncVar] private int current_bet;
     [SyncVar] private int dealer_id;
-
-
 
     // Use this for initialization
     void Start () {
@@ -204,6 +202,8 @@ public class GameManager : NetworkBehaviour {
         Card4 = Deck.GetBlankCard();
         Card5 = Deck.GetBlankCard();
     }
+
+    //~~~~~~~~~~~~~~Stage Coroutines~~~~~~~~~~~~//
 
     private IEnumerator BurnAndFlop() {
         //Burn
