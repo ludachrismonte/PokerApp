@@ -21,7 +21,7 @@ public enum GameState
 
 public class GameManager : NetworkBehaviour {
 
-    private bool GameStart = false;
+    private bool Proceed = false;
 
     private GameState game_state;
 
@@ -41,58 +41,41 @@ public class GameManager : NetworkBehaviour {
 	
 	// Control Gameloop
 	void Update () {
-        if (game_state == GameState.PreGame && GameStart) {
-            GameStart = false;
-            Debug.Log("Starting Game");
-            game_state = GameState.Deal;
-        }
-        if (game_state == GameState.Deal) {
-            Debug.Log("Dealing Hands");
-            card_manager.Deal();
-            game_state = GameState.FirstBet;
-        }
-        if (game_state == GameState.FirstBet)
+        switch (game_state)
         {
-            Debug.Log("First Round of Betting");
-            game_state = GameState.Flop;
-        }
-        if (game_state == GameState.Flop)
-        {
-            Debug.Log("Dealing Flop");
-            StartCoroutine(card_manager.BurnAndFlop());
-            game_state = GameState.SecondBet;
-        }
-        if (game_state == GameState.SecondBet)
-        {
-            Debug.Log("Second Round of Betting");
-            game_state = GameState.Turn;
-        }
-        if (game_state == GameState.Turn)
-        {
-            Debug.Log("Dealing Turn");
-            StartCoroutine(card_manager.BurnAndTurn());
-            game_state = GameState.ThirdBet;
-        }
-        if (game_state == GameState.ThirdBet)
-        {
-            game_state = GameState.River;
-        }
-        if (game_state == GameState.River)
-        {
-            StartCoroutine(card_manager.BurnAndRiver());
-            game_state = GameState.FourthBet;
-        }
-        if (game_state == GameState.FourthBet)
-        {
-            game_state = GameState.Payout;
-        }
-        if (game_state == GameState.Payout)
-        {
-            game_state = GameState.Reset;
-        }
-        if (game_state == GameState.Reset)
-        {
-            game_state = GameState.PreGame;
+            case GameState.PreGame:
+                RunPregame();
+                break;
+            case GameState.Deal:
+                RunDeal();
+                break;
+            case GameState.FirstBet:
+                RunFirstBet();
+                break;
+            case GameState.Flop:
+                RunFlop();
+                break;
+            case GameState.SecondBet:
+                RunSecondBet();
+                break;
+            case GameState.Turn:
+                RunTurn();
+                break;
+            case GameState.ThirdBet:
+                RunThirdBet();
+                break;
+            case GameState.River:
+                RunRiver();
+                break;
+            case GameState.FourthBet:
+                RunFourthBet();
+                break;
+            case GameState.Payout:
+                RunPayout();
+                break;
+            case GameState.Reset:
+                RunReset();
+                break;
         }
     }
 
@@ -106,7 +89,7 @@ public class GameManager : NetworkBehaviour {
     }
 
     public void StartGame() {
-        GameStart = true;
+        Proceed = true;
     }
 
     public int GetPot() {
@@ -115,6 +98,100 @@ public class GameManager : NetworkBehaviour {
 
     public void AddToPot(int amt) {
         current_pot += amt;
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATES~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+    private void RunPregame() {
+        if (!Proceed) {
+            return;
+        }
+        Debug.Log("Starting Game");
+        game_state = GameState.Deal;
+        Proceed = false;
+    }
+
+    private void RunDeal() {
+        if (!Proceed)
+        {
+            return;
+        }
+        Debug.Log("Dealing");
+        card_manager.Deal();
+        game_state = GameState.FirstBet;
+        Proceed = false;
+    }
+
+    private void RunFirstBet()
+    {
+        Debug.Log("RunFirstBet");
+        game_state = GameState.Flop;
+    }
+
+    private void RunFlop()
+    {
+        if (!Proceed)
+        {
+            return;
+        }
+        Debug.Log("RunFlop");
+        StartCoroutine(card_manager.BurnAndFlop());
+        game_state = GameState.SecondBet;
+        Proceed = false;
+    }
+
+    private void RunSecondBet()
+    {
+        Debug.Log("RunSecondBet");
+        game_state = GameState.Turn;
+    }
+
+    private void RunTurn()
+    {
+        if (!Proceed)
+        {
+            return;
+        }
+        Debug.Log("RunTurn");
+        StartCoroutine(card_manager.BurnAndTurn());
+        game_state = GameState.ThirdBet;
+        Proceed = false;
+    }
+
+    private void RunThirdBet()
+    {
+        Debug.Log("RunThirdBet");
+        game_state = GameState.River;
+    }
+
+    private void RunRiver()
+    {
+        if (!Proceed)
+        {
+            return;
+        }
+        Debug.Log("RunRiver");
+        StartCoroutine(card_manager.BurnAndRiver());
+        game_state = GameState.FourthBet;
+        Proceed = false;
+    }
+
+    private void RunFourthBet()
+    {
+        Debug.Log("RunFourthBet");
+        game_state = GameState.Payout;
+    }
+
+    private void RunPayout()
+    {
+        Debug.Log("RunPayout");
+        game_state = GameState.Reset;
+    }
+
+    private void RunReset()
+    {
+        Debug.Log("RunReset");
+        game_state = GameState.PreGame;
     }
 
 }

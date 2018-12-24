@@ -110,6 +110,7 @@ public class Cards : MonoBehaviour {
 
     public Card GetTopCard() {
         deal_card_id++;
+        Debug.Log("Top Card = " + Deck[deal_card_id - 1].String());
         return Deck[deal_card_id - 1];
     }
 

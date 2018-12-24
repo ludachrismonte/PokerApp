@@ -74,7 +74,7 @@ public class Player : NetworkBehaviour {
         cardA = "";
         cardB = "";
 
-        gameObject.tag = "Player" + ID;
+        transform.name = "Player" + ID;
     }
 
     // Update is called once per frame
