@@ -120,7 +120,17 @@ public class Cards : MonoBehaviour {
     }
 
     public void Shuffle() {
+        List<Card> tmp = new List<Card>();
 
+        int max = Deck.Count;
+        while (max > 0)
+        {
+            int offset = UnityEngine.Random.Range(0, max);
+            tmp.Add(Deck[offset]);
+            Deck.RemoveAt(offset);
+            max -= 1;
+        }
+        Deck = tmp;
     }
 
     public void Reset() {

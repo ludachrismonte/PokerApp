@@ -26,17 +26,17 @@ public class GameManager : NetworkBehaviour {
     private GameState game_state;
 
     [SyncVar] private int num_registered;
-    [SyncVar] private int current_pot;
-    [SyncVar] private int current_bet;
     [SyncVar] private int dealer_id;
 
     private CardManager card_manager;
+    private BettingManager betting_manager;
 
     // Use this for initialization
     void Start () {
         num_registered = 0;
         game_state = GameState.PreGame;
         card_manager = GetComponent<CardManager>();
+        betting_manager = GetComponent<BettingManager>();
     }
 	
 	// Control Gameloop
@@ -92,12 +92,10 @@ public class GameManager : NetworkBehaviour {
         Proceed = true;
     }
 
-    public int GetPot() {
-        return current_pot;
-    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATE CHECKS~~~~~~~~~~~~~~~~~~~~~~//
 
-    public void AddToPot(int amt) {
-        current_pot += amt;
+    public bool IsOnBettingStage() {
+        return game_state == GameState.FirstBet || game_state == GameState.SecondBet || game_state == GameState.ThirdBet || game_state == GameState.FourthBet;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATES~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -107,6 +105,7 @@ public class GameManager : NetworkBehaviour {
             return;
         }
         Debug.Log("Starting Game");
+        betting_manager.InitializePlayerList(num_registered);
         game_state = GameState.Deal;
         Proceed = false;
     }
@@ -117,7 +116,7 @@ public class GameManager : NetworkBehaviour {
             return;
         }
         Debug.Log("Dealing");
-        card_manager.Deal();
+        card_manager.ShuffleAndDeal();
         game_state = GameState.FirstBet;
         Proceed = false;
     }
@@ -193,5 +192,4 @@ public class GameManager : NetworkBehaviour {
         Debug.Log("RunReset");
         game_state = GameState.PreGame;
     }
-
 }

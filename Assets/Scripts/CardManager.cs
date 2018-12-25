@@ -47,8 +47,9 @@ public class CardManager : NetworkBehaviour {
 		
 	}
 
-    public void Deal()
+    public void ShuffleAndDeal()
     {
+        Deck.Shuffle();
         for (int round = 1; round <= 2; round++)
         {
             for (int i = 0; i < game_manager.GetNumRegistered(); i++)
@@ -74,15 +75,15 @@ public class CardManager : NetworkBehaviour {
     {
         switch (which)
         {
-            case 1:
+            case 0:
                 return Card1.String();
-            case 2:
+            case 1:
                 return Card2.String();
-            case 3:
+            case 2:
                 return Card3.String();
-            case 4:
+            case 3:
                 return Card4.String();
-            case 5:
+            case 4:
                 return Card5.String();
         }
         return "ERROR";
