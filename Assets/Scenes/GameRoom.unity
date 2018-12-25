@@ -289,6 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7ed7ea64fa6ce84f8c0c1f10ab856e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turn_id: 0
   players: []
 --- !u!1 &1820374323
 GameObject:

@@ -9,16 +9,15 @@ public class Player : NetworkBehaviour {
     [SyncVar] public int ID = -1;
 
     public GameObject Canvas;
-    public Text[] TableCardTexts;
+    public Image[] TableCards;
     public Text[] TableStacks;
 
     private Text PotText;
     private Text ChipText;
-    private Text CardAtext;
-    private Text CardBtext;
 
-    public string cardA;
-    public string cardB;
+    private Image CardA;
+    private Image CardB;
+    private Dictionary<string, Sprite> Sprites;
 
     private GameManager game_manager;
     private StackManager stack_manager;
@@ -35,18 +34,15 @@ public class Player : NetworkBehaviour {
         card_manager = game_manager.gameObject.GetComponent<CardManager>();
         betting_manager = game_manager.gameObject.GetComponent<BettingManager>();
 
-
         PotText = Canvas.transform.Find("Pot").GetComponent<Text>();
         ChipText = Canvas.transform.Find("My Stack").GetComponent<Text>();
 
-        CardAtext = Canvas.transform.Find("Card A").GetComponent<Text>();
-        CardBtext = Canvas.transform.Find("Card B").GetComponent<Text>();
+        LoadSpriteDictionary();
+        CardA = Canvas.transform.Find("Card A").GetComponent<Image>();
+        CardB = Canvas.transform.Find("Card B").GetComponent<Image>();
 
         ID = game_manager.Register();
         stack_manager.SetStack(ID, 500);
-
-        cardA = "";
-        cardB = "";
 
         transform.name = "Player" + ID;
 
@@ -88,11 +84,6 @@ public class Player : NetworkBehaviour {
 
     //~~~~~~~~~~~~~SETTERS~~~~~~~~~~~~~~//
 
-    public void ClearCards()
-    {
-        cardA = "";
-        cardB = "";
-    }
 
     //~~~~~~~~~~~~~BETTING~~~~~~~~~~~~~~//
     public void bet(int amt) {
@@ -141,14 +132,15 @@ public class Player : NetworkBehaviour {
     }
 
     private void UpdateCardUI() {
-        CardAtext.text = card_manager.GetCard(ID, 0);
-        CardBtext.text = card_manager.GetCard(ID, 1);
+        Debug.Log("Getting: " + card_manager.GetCard(ID, 0));
+        CardA.sprite = GetSpriteByName(card_manager.GetCard(ID, 0));
+        CardB.sprite = GetSpriteByName(card_manager.GetCard(ID, 1));
     }
 
     private void UpdateTableCardsUI()
     {
         for (int i = 0; i < 5; i++) {
-            TableCardTexts[i].text = card_manager.GetTableCard(i);
+            TableCards[i].sprite = GetSpriteByName(card_manager.GetTableCard(i));
         }
     }
 
@@ -159,4 +151,25 @@ public class Player : NetworkBehaviour {
         }
     }
 
+    //~~~~~~~~~~~~~SPRITE CONTROL~~~~~~~~~~~~~~//
+
+
+    private void LoadSpriteDictionary()
+    {
+        Sprite[] SpritesData = Resources.LoadAll<Sprite>("cards");
+        Sprites = new Dictionary<string, Sprite>();
+
+        for (int i = 0; i < SpritesData.Length; i++)
+        {
+            Sprites.Add(SpritesData[i].name, SpritesData[i]);
+        }
+    }
+
+    private Sprite GetSpriteByName(string name)
+    {
+        if (Sprites.ContainsKey(name))
+            return Sprites[name];
+        else
+            return null;
+    }
 }
