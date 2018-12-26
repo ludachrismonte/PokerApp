@@ -27,6 +27,8 @@ public class Player : NetworkBehaviour {
     [SyncVar] private bool Is_In_Hand;
     [SyncVar] private bool Bets_Are_Up_To_Date;
 
+    private float SlowConnectionTimer;
+
     // Use this for initialization
     void Start() {
         game_manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
@@ -47,15 +49,23 @@ public class Player : NetworkBehaviour {
         transform.name = "Player" + ID;
 
         Is_In_Hand = true;
+
+        UpdateUI();
+
+        SlowConnectionTimer = 0f;
     }
 
     // Update is called once per frame
     void Update() {
+        SlowConnectionTimer += Time.deltaTime;
+        if (SlowConnectionTimer > 1) {
+            SlowConnectionTimer = 0f;
+            UpdateUI();
+        }
+
         if (game_manager.IsOnBettingStage() && betting_manager.GetTurnID() == ID) {
             Debug.Log("I am player " + ID + " and its my turn to bet!");
         }
-
-        UpdateUI();
     }
 
     //~~~~~~~~~~~~~Ready-Up~~~~~~~~~~~~~~//
@@ -115,11 +125,11 @@ public class Player : NetworkBehaviour {
 
     //~~~~~~~~~~~~~UI UPDATES~~~~~~~~~~~~~~//
 
-    private void UpdateUI() {
+    public void UpdateUI() {
         ShowPot();
         UpdateChipCountUI();
-        UpdateCardUI();
-        UpdateTableCardsUI();
+        RpcUpdateCardUI();
+        RpcUpdateTableCardsUI();
         UpdateTableStacks();
     }
 
@@ -131,16 +141,42 @@ public class Player : NetworkBehaviour {
         ChipText.text = "Chip Stack: " + stack_manager.GetStack(ID).ToString();
     }
 
-    private void UpdateCardUI() {
-        Debug.Log("Getting: " + card_manager.GetCard(ID, 0));
-        CardA.sprite = GetSpriteByName(card_manager.GetCard(ID, 0));
-        CardB.sprite = GetSpriteByName(card_manager.GetCard(ID, 1));
+    [ClientRpc]
+    public void RpcUpdateCardUI() {
+        Debug.Log("Client is updating their personal cards");
+        if (card_manager.GetCard(ID, 0) == "NoneNone")
+        {
+            CardA.enabled = false;
+        }
+        else
+        {
+            CardA.enabled = true;
+            CardA.sprite = GetSpriteByName(card_manager.GetCard(ID, 0));
+        }
+        if (card_manager.GetCard(ID, 1) == "NoneNone")
+        {
+            CardB.enabled = false;
+        }
+        else
+        {
+            CardB.enabled = true;
+            CardB.sprite = GetSpriteByName(card_manager.GetCard(ID, 1));
+        }
     }
 
-    private void UpdateTableCardsUI()
+    [ClientRpc]
+    public void RpcUpdateTableCardsUI()
     {
+        Debug.Log("Client is updating the table cards");
         for (int i = 0; i < 5; i++) {
-            TableCards[i].sprite = GetSpriteByName(card_manager.GetTableCard(i));
+            if (card_manager.GetTableCard(i) == "NoneNone")
+            {
+                TableCards[i].enabled = false;
+            }
+            else {
+                TableCards[i].enabled = true;
+                TableCards[i].sprite = GetSpriteByName(card_manager.GetTableCard(i));
+            }
         }
     }
 

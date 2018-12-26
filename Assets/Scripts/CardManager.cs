@@ -47,7 +47,7 @@ public class CardManager : NetworkBehaviour {
 		
 	}
 
-    public void ShuffleAndDeal()
+    public IEnumerator ShuffleAndDeal()
     {
         Deck.Shuffle();
         for (int round = 1; round <= 2; round++)
@@ -55,6 +55,12 @@ public class CardManager : NetworkBehaviour {
             for (int i = 0; i < game_manager.GetNumRegistered(); i++)
             {
                 FileCard(Deck.GetTopCard(), i, round);
+            }
+            //Wait for network latency
+            yield return new WaitForSeconds(1f);
+            for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+            {
+                GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateCardUI();
             }
         }
     }
@@ -121,15 +127,31 @@ public class CardManager : NetworkBehaviour {
         Card burn = Deck.GetTopCard();
         Debug.Log("Burning " + burn.String());
         yield return new WaitForSeconds(1f);
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
         //Deal
         Card1 = Deck.GetTopCard();
         Debug.Log("Dealing 1: " + Card1.String());
         yield return new WaitForSeconds(1f);
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
         Card2 = Deck.GetTopCard();
         Debug.Log("Dealing 2: " + Card2.String());
         yield return new WaitForSeconds(1f);
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
         Card3 = Deck.GetTopCard();
         Debug.Log("Dealing 3: " + Card3.String());
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
     }
 
     public IEnumerator BurnAndTurn()
@@ -141,6 +163,10 @@ public class CardManager : NetworkBehaviour {
         //Deal
         Card4 = Deck.GetTopCard();
         Debug.Log("Dealing 4: " + Card4.String());
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
     }
 
     public IEnumerator BurnAndRiver()
@@ -152,5 +178,9 @@ public class CardManager : NetworkBehaviour {
         //Deal
         Card5 = Deck.GetTopCard();
         Debug.Log("Dealing 5: " + Card5.String());
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+        {
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        }
     }
 }

@@ -116,7 +116,7 @@ public class GameManager : NetworkBehaviour {
             return;
         }
         Debug.Log("Dealing");
-        card_manager.ShuffleAndDeal();
+        StartCoroutine(card_manager.ShuffleAndDeal());
         game_state = GameState.FirstBet;
         Proceed = false;
     }

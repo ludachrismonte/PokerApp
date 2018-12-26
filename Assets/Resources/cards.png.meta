@@ -3,46 +3,46 @@ guid: 8b39ae5b2e947d641ba0c2357b19abc0
 TextureImporter:
   fileIDToRecycleName:
     21300000: TwoDiamonds
-    21300002: cards_1
-    21300004: cards_2
-    21300006: cards_3
-    21300008: cards_4
-    21300010: cards_5
-    21300012: cards_6
-    21300014: cards_7
-    21300016: cards_8
-    21300018: cards_9
-    21300020: cards_10
-    21300022: cards_11
-    21300024: cards_12
+    21300002: ThreeDiamonds
+    21300004: FourDiamonds
+    21300006: FiveDiamonds
+    21300008: SixDiamonds
+    21300010: SevenDiamonds
+    21300012: EightDiamonds
+    21300014: NineDiamonds
+    21300016: TenDiamonds
+    21300018: JackDiamonds
+    21300020: QueenDiamonds
+    21300022: KingDiamonds
+    21300024: AceDiamonds
     21300026: cards_13
-    21300028: cards_14
-    21300030: cards_15
-    21300032: cards_16
-    21300034: cards_17
-    21300036: cards_18
-    21300038: cards_19
-    21300040: cards_20
-    21300042: cards_21
-    21300044: cards_22
-    21300046: cards_23
-    21300048: cards_24
-    21300050: cards_25
-    21300052: cards_26
+    21300028: TwoClubs
+    21300030: ThreeClubs
+    21300032: FourClubs
+    21300034: FiveClubs
+    21300036: SixClubs
+    21300038: SevenClubs
+    21300040: EightClubs
+    21300042: NineClubs
+    21300044: TenClubs
+    21300046: JackClubs
+    21300048: QueenClubs
+    21300050: KingClubs
+    21300052: AceClubs
     21300054: cards_27
-    21300056: cards_28
-    21300058: cards_29
-    21300060: cards_30
-    21300062: cards_31
-    21300064: cards_32
-    21300066: cards_33
-    21300068: cards_34
-    21300070: cards_35
-    21300072: cards_36
-    21300074: cards_37
-    21300076: cards_38
-    21300078: cards_39
-    21300080: cards_40
+    21300056: TwoHearts
+    21300058: ThreeHearts
+    21300060: FourHearts
+    21300062: FiveHearts
+    21300064: SixHearts
+    21300066: SevenHearts
+    21300068: EightHearts
+    21300070: NineHearts
+    21300072: TenHearts
+    21300074: JackHearts
+    21300076: QueenHearts
+    21300078: KingHearts
+    21300080: AceHearts
     21300082: NoneNone
     21300084: TwoSpades
     21300086: ThreeSpades
@@ -52,7 +52,7 @@ TextureImporter:
     21300094: SevenSpades
     21300096: EightSpades
     21300098: NineSpades
-    21300100: cards_0
+    21300100: TwoDiamonds
     21300102: TenSpades
     21300104: JackSpades
     21300106: QueenSpades
@@ -173,7 +173,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cards_0
+      name: TwoDiamonds
       rect:
         serializedVersion: 2
         x: 0
@@ -193,7 +193,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_1
+      name: ThreeDiamonds
       rect:
         serializedVersion: 2
         x: 77
@@ -213,7 +213,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_2
+      name: FourDiamonds
       rect:
         serializedVersion: 2
         x: 154
@@ -233,7 +233,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_3
+      name: FiveDiamonds
       rect:
         serializedVersion: 2
         x: 231
@@ -253,7 +253,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_4
+      name: SixDiamonds
       rect:
         serializedVersion: 2
         x: 308
@@ -273,7 +273,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_5
+      name: SevenDiamonds
       rect:
         serializedVersion: 2
         x: 385
@@ -293,7 +293,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_6
+      name: EightDiamonds
       rect:
         serializedVersion: 2
         x: 462
@@ -313,7 +313,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_7
+      name: NineDiamonds
       rect:
         serializedVersion: 2
         x: 539
@@ -333,7 +333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_8
+      name: TenDiamonds
       rect:
         serializedVersion: 2
         x: 616
@@ -353,7 +353,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_9
+      name: JackDiamonds
       rect:
         serializedVersion: 2
         x: 693
@@ -373,7 +373,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_10
+      name: QueenDiamonds
       rect:
         serializedVersion: 2
         x: 770
@@ -393,7 +393,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_11
+      name: KingDiamonds
       rect:
         serializedVersion: 2
         x: 847
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_12
+      name: AceDiamonds
       rect:
         serializedVersion: 2
         x: 924
@@ -453,7 +453,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_14
+      name: TwoClubs
       rect:
         serializedVersion: 2
         x: 0
@@ -473,7 +473,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_15
+      name: ThreeClubs
       rect:
         serializedVersion: 2
         x: 77
@@ -493,7 +493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_16
+      name: FourClubs
       rect:
         serializedVersion: 2
         x: 154
@@ -513,7 +513,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_17
+      name: FiveClubs
       rect:
         serializedVersion: 2
         x: 231
@@ -533,7 +533,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_18
+      name: SixClubs
       rect:
         serializedVersion: 2
         x: 308
@@ -553,7 +553,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_19
+      name: SevenClubs
       rect:
         serializedVersion: 2
         x: 385
@@ -573,7 +573,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_20
+      name: EightClubs
       rect:
         serializedVersion: 2
         x: 462
@@ -593,7 +593,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_21
+      name: NineClubs
       rect:
         serializedVersion: 2
         x: 539
@@ -613,7 +613,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_22
+      name: TenClubs
       rect:
         serializedVersion: 2
         x: 616
@@ -633,7 +633,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_23
+      name: JackClubs
       rect:
         serializedVersion: 2
         x: 693
@@ -653,7 +653,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_24
+      name: QueenClubs
       rect:
         serializedVersion: 2
         x: 770
@@ -673,7 +673,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_25
+      name: KingClubs
       rect:
         serializedVersion: 2
         x: 847
@@ -693,7 +693,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_26
+      name: AceClubs
       rect:
         serializedVersion: 2
         x: 924
@@ -733,7 +733,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_28
+      name: TwoHearts
       rect:
         serializedVersion: 2
         x: 0
@@ -753,7 +753,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_29
+      name: ThreeHearts
       rect:
         serializedVersion: 2
         x: 77
@@ -773,7 +773,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_30
+      name: FourHearts
       rect:
         serializedVersion: 2
         x: 154
@@ -793,7 +793,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_31
+      name: FiveHearts
       rect:
         serializedVersion: 2
         x: 231
@@ -813,7 +813,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_32
+      name: SixHearts
       rect:
         serializedVersion: 2
         x: 308
@@ -833,7 +833,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_33
+      name: SevenHearts
       rect:
         serializedVersion: 2
         x: 385
@@ -853,7 +853,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_34
+      name: EightHearts
       rect:
         serializedVersion: 2
         x: 462
@@ -873,7 +873,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_35
+      name: NineHearts
       rect:
         serializedVersion: 2
         x: 539
@@ -893,7 +893,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_36
+      name: TenHearts
       rect:
         serializedVersion: 2
         x: 616
@@ -913,7 +913,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_37
+      name: JackHearts
       rect:
         serializedVersion: 2
         x: 693
@@ -933,7 +933,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_38
+      name: QueenHearts
       rect:
         serializedVersion: 2
         x: 770
@@ -953,7 +953,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_39
+      name: KingHearts
       rect:
         serializedVersion: 2
         x: 847
@@ -973,7 +973,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cards_40
+      name: AceHearts
       rect:
         serializedVersion: 2
         x: 924
