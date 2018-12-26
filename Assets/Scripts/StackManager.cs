@@ -51,21 +51,6 @@ public class StackManager : NetworkBehaviour {
         }
     }
 
-    public List<int> GetStackCounts()
-    {
-        List<int> Stacks = new List<int>();
-        Stacks.Add(Stack0);
-        Stacks.Add(Stack1);
-        Stacks.Add(Stack2);
-        Stacks.Add(Stack3);
-        Stacks.Add(Stack4);
-        Stacks.Add(Stack5);
-        Stacks.Add(Stack6);
-        Stacks.Add(Stack7);
-        Stacks.Add(Stack8);
-        return Stacks;
-    }
-
     public void ModStack(int ID, int amt)
     {
         switch (ID)

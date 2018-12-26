@@ -183,7 +183,7 @@ public class Player : NetworkBehaviour {
     private void UpdateTableStacks()
     {
         for (int i = 0; i < 9; i++) {
-            TableStacks[i].text = (stack_manager.GetStack(i) > 0 && ID != 0) ? "Stack " + i + ": " + stack_manager.GetStack(i).ToString() : "";
+            TableStacks[i].text = (stack_manager.GetStack(i) > 0 && ID != i) ? "Stack " + i + ": " + stack_manager.GetStack(i).ToString() : "";
         }
     }
 
