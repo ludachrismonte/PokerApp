@@ -255,6 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a65296f305d0f7244a0e7f2dbbb3ac30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  num_registered: 0
 --- !u!114 &432528134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,10 +287,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 432528130}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7ed7ea64fa6ce84f8c0c1f10ab856e6, type: 3}
+  m_Script: {fileID: 11500000, guid: a801e64a6fa4d2648adf1aeec109a3c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turn_id: 0
+  round_over: 0
   players: []
 --- !u!1 &1820374323
 GameObject:

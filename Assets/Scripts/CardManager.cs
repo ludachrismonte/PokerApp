@@ -63,6 +63,7 @@ public class CardManager : NetworkBehaviour {
                 GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateCardUI();
             }
         }
+        game_manager.SetGameState(GameState.FirstBet);
     }
 
     public string GetCard(int ID, int which)
@@ -152,6 +153,7 @@ public class CardManager : NetworkBehaviour {
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
         }
+        game_manager.SetGameState(GameState.SecondBet);
     }
 
     public IEnumerator BurnAndTurn()
@@ -167,6 +169,7 @@ public class CardManager : NetworkBehaviour {
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
         }
+        game_manager.SetGameState(GameState.ThirdBet);
     }
 
     public IEnumerator BurnAndRiver()
@@ -182,5 +185,6 @@ public class CardManager : NetworkBehaviour {
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
         }
+        game_manager.SetGameState(GameState.FourthBet);
     }
 }

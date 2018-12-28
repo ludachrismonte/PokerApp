@@ -11,7 +11,7 @@ public class Player : NetworkBehaviour {
     public GameObject Canvas;
     public Image[] TableCards;
     public Text[] TableStacks;
-
+    private GameObject TurnObjects;
     private Text PotText;
     private Text ChipText;
 
@@ -24,6 +24,8 @@ public class Player : NetworkBehaviour {
     private CardManager card_manager;
     private BettingManager betting_manager;
 
+    private int my_bet;
+
     [SyncVar] private bool Is_In_Hand;
     [SyncVar] private bool Bets_Are_Up_To_Date;
 
@@ -35,7 +37,8 @@ public class Player : NetworkBehaviour {
         stack_manager = game_manager.gameObject.GetComponent<StackManager>();
         card_manager = game_manager.gameObject.GetComponent<CardManager>();
         betting_manager = game_manager.gameObject.GetComponent<BettingManager>();
-
+        TurnObjects = Canvas.transform.Find("TurnObjects").gameObject;
+        TurnObjects.SetActive(false);
         PotText = Canvas.transform.Find("Pot").GetComponent<Text>();
         ChipText = Canvas.transform.Find("My Stack").GetComponent<Text>();
 
@@ -58,13 +61,10 @@ public class Player : NetworkBehaviour {
     // Update is called once per frame
     void Update() {
         SlowConnectionTimer += Time.deltaTime;
-        if (SlowConnectionTimer > 1) {
+        if (SlowConnectionTimer > 1)
+        {
             SlowConnectionTimer = 0f;
             UpdateUI();
-        }
-
-        if (game_manager.IsOnBettingStage() && betting_manager.GetTurnID() == ID) {
-            Debug.Log("I am player " + ID + " and its my turn to bet!");
         }
     }
 
@@ -89,25 +89,42 @@ public class Player : NetworkBehaviour {
 
     public bool HasCalled()
     {
-        return Bets_Are_Up_To_Date;
+        return Is_In_Hand && Bets_Are_Up_To_Date;
+    }
+
+    public int GetStack() {
+        return stack_manager.GetStack(ID);
     }
 
     //~~~~~~~~~~~~~SETTERS~~~~~~~~~~~~~~//
 
+    [ClientRpc]
+    public void RpcEnableBetting(bool on)
+    {
+        TurnObjects.SetActive(on);
+    }
 
     //~~~~~~~~~~~~~BETTING~~~~~~~~~~~~~~//
-    public void bet(int amt) {
-        if (amt > stack_manager.GetStack(ID)) {
+    public void ResetBets() {
+        Bets_Are_Up_To_Date = false;
+    }
+
+    public void SetMyBet(int amt) {
+        my_bet = amt;
+    }
+
+    public void bet() {
+        if (my_bet > stack_manager.GetStack(ID)) {
             Debug.Log("Can't bet more than my stack");
         }
         Bets_Are_Up_To_Date = true;
-        CmdBet(amt);
+        CmdBet();
     }
 
     [Command]
-    private void CmdBet(int amt) {
-        betting_manager.ServerBet(ID, amt);
-        stack_manager.ModStack(ID, -amt);
+    private void CmdBet() {
+        betting_manager.ServerBet(ID, my_bet);
+        stack_manager.ModStack(ID, -my_bet);
     }
 
     //~~~~~~~~~~~~~FOLDING~~~~~~~~~~~~~~//

@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 
 public enum GameState
 {
-    PreGame = 1,
     Deal = 2,
     FirstBet = 3,
     Flop = 4,
@@ -16,7 +15,9 @@ public enum GameState
     River = 8,
     FourthBet = 9,
     Payout = 10,
-    Reset = 11
+    Reset = 11,
+    BettingLimbo = 12,
+    WaitingLimbo = 13
 };
 
 public class GameManager : NetworkBehaviour {
@@ -25,7 +26,7 @@ public class GameManager : NetworkBehaviour {
 
     private GameState game_state;
 
-    [SyncVar] private int num_registered;
+    [SyncVar] public int num_registered;
     [SyncVar] private int dealer_id;
 
     private CardManager card_manager;
@@ -34,41 +35,46 @@ public class GameManager : NetworkBehaviour {
     // Use this for initialization
     void Start () {
         num_registered = 0;
-        game_state = GameState.PreGame;
         card_manager = GetComponent<CardManager>();
         betting_manager = GetComponent<BettingManager>();
+        Debug.Log("Waiting for players to start...");
     }
-	
-	// Control Gameloop
-	void Update () {
+
+    // Control Gameloop
+    void Update () {
         switch (game_state)
-        {
-            case GameState.PreGame:
-                RunPregame();
-                break;
+        {   
             case GameState.Deal:
+                game_state = GameState.WaitingLimbo;
                 RunDeal();
                 break;
             case GameState.FirstBet:
-                RunFirstBet();
+                game_state = GameState.BettingLimbo;
+                StartCoroutine(RunFirstBet());
                 break;
             case GameState.Flop:
+                game_state = GameState.WaitingLimbo;
                 RunFlop();
                 break;
             case GameState.SecondBet:
-                RunSecondBet();
+                game_state = GameState.BettingLimbo;
+                StartCoroutine(RunSecondBet());
                 break;
             case GameState.Turn:
+                game_state = GameState.WaitingLimbo;
                 RunTurn();
                 break;
             case GameState.ThirdBet:
-                RunThirdBet();
+                game_state = GameState.BettingLimbo;
+                StartCoroutine(RunThirdBet());
                 break;
             case GameState.River:
+                game_state = GameState.WaitingLimbo;
                 RunRiver();
                 break;
             case GameState.FourthBet:
-                RunFourthBet();
+                game_state = GameState.BettingLimbo;
+                StartCoroutine(RunFourthBet());
                 break;
             case GameState.Payout:
                 RunPayout();
@@ -88,96 +94,97 @@ public class GameManager : NetworkBehaviour {
         return num_registered;
     }
 
-    public void StartGame() {
-        Proceed = true;
+    //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATE SETS~~~~~~~~~~~~~~~~~~~~~~//
+
+    public void StartGame()
+    {
+        betting_manager.InitializePlayerList(num_registered);
+        SetGameState(GameState.Deal);
+    }
+
+    public void SetGameState(GameState state) {
+        game_state = state;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATE CHECKS~~~~~~~~~~~~~~~~~~~~~~//
 
     public bool IsOnBettingStage() {
-        return game_state == GameState.FirstBet || game_state == GameState.SecondBet || game_state == GameState.ThirdBet || game_state == GameState.FourthBet;
+        return game_state == GameState.BettingLimbo;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATES~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-    private void RunPregame() {
-        if (!Proceed) {
-            return;
-        }
-        Debug.Log("Starting Game");
-        betting_manager.InitializePlayerList(num_registered);
-        game_state = GameState.Deal;
-        Proceed = false;
-    }
-
     private void RunDeal() {
-        if (!Proceed)
-        {
-            return;
-        }
         Debug.Log("Dealing");
         StartCoroutine(card_manager.ShuffleAndDeal());
-        game_state = GameState.FirstBet;
-        Proceed = false;
     }
 
-    private void RunFirstBet()
+    private IEnumerator RunFirstBet()
     {
         Debug.Log("RunFirstBet");
+        betting_manager.ResetBets();
+        betting_manager.StartRound(0);
+        while (!betting_manager.CheckIfEveryoneIsDone()) {
+            yield return null;
+        }
+        betting_manager.DisableAllBetting();
         game_state = GameState.Flop;
     }
 
     private void RunFlop()
     {
-        if (!Proceed)
-        {
-            return;
-        }
         Debug.Log("RunFlop");
         StartCoroutine(card_manager.BurnAndFlop());
-        game_state = GameState.SecondBet;
-        Proceed = false;
     }
 
-    private void RunSecondBet()
+    private IEnumerator RunSecondBet()
     {
         Debug.Log("RunSecondBet");
+        betting_manager.ResetBets();
+        betting_manager.StartRound(0);
+        while (!betting_manager.CheckIfEveryoneIsDone())
+        {
+            yield return null;
+        }
+        betting_manager.DisableAllBetting();
         game_state = GameState.Turn;
     }
 
     private void RunTurn()
     {
-        if (!Proceed)
-        {
-            return;
-        }
         Debug.Log("RunTurn");
         StartCoroutine(card_manager.BurnAndTurn());
-        game_state = GameState.ThirdBet;
-        Proceed = false;
     }
 
-    private void RunThirdBet()
+    private IEnumerator RunThirdBet()
     {
         Debug.Log("RunThirdBet");
+        betting_manager.ResetBets();
+        betting_manager.StartRound(0);
+        while (!betting_manager.CheckIfEveryoneIsDone())
+        {
+            yield return null;
+        }
+        betting_manager.DisableAllBetting();
         game_state = GameState.River;
     }
 
     private void RunRiver()
     {
-        if (!Proceed)
-        {
-            return;
-        }
         Debug.Log("RunRiver");
         StartCoroutine(card_manager.BurnAndRiver());
-        game_state = GameState.FourthBet;
-        Proceed = false;
     }
 
-    private void RunFourthBet()
+    private IEnumerator RunFourthBet()
     {
         Debug.Log("RunFourthBet");
+        betting_manager.ResetBets();
+        betting_manager.StartRound(0);
+        while (!betting_manager.CheckIfEveryoneIsDone())
+        {
+            yield return null;
+        }
+        betting_manager.DisableAllBetting();
         game_state = GameState.Payout;
     }
 
@@ -190,6 +197,7 @@ public class GameManager : NetworkBehaviour {
     private void RunReset()
     {
         Debug.Log("RunReset");
-        game_state = GameState.PreGame;
+        betting_manager.ResetBets();
+        betting_manager.ResetHand();
     }
 }

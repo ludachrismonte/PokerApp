@@ -10,7 +10,7 @@ public class BettingManager : NetworkBehaviour {
     [SyncVar] private int current_bet;
     [SyncVar] private int current_pot;
     [SyncVar] public int turn_id;
-    [SyncVar] private bool round_over;
+    [SyncVar] public bool round_over;
 
     public List<Player> players;
 
@@ -19,26 +19,71 @@ public class BettingManager : NetworkBehaviour {
         game_manager = GetComponent<GameManager>();
         turn_id = 0;
         Debug.Log("Betting Manager started turn at player " + turn_id);
-        Reset();
+        ResetBets();
+        ResetHand();
     }
 
     // Update is called once per frame
     void Update() {
-        if (players.Count > 0 && !players[turn_id].IsIn() && players[turn_id].HasCalled()) {
+        if (game_manager.IsOnBettingStage() && players.Count > 0 && (!players[turn_id].IsIn() || players[turn_id].HasCalled())) {
             MoveToNextPlayer();
         }
     }
 
     public void InitializePlayerList(int num_registered) {
+        Debug.Log("Betting Manager is initializing player list to size " + num_registered);
         for (int i = 0; i < num_registered; i++) {
             players.Add(GameObject.Find("Player" + i).GetComponent<Player>());
         }
     }
 
-    private void Reset()
+    public void StartRound(int StartID) {
+        turn_id = StartID;
+        players[turn_id].RpcEnableBetting(true);
+    }
+
+    private void MoveToNextPlayer()
     {
+        players[turn_id].RpcEnableBetting(false);
+        turn_id++;
+        if (turn_id == game_manager.GetNumRegistered())
+        {
+            turn_id = 0;
+        }
+        players[turn_id].RpcEnableBetting(true);
+        Debug.Log("Betting Manager moved turn to player " + turn_id);
+    }
+
+    public bool CheckIfEveryoneIsDone() {
+        round_over = true;
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].IsIn() && !players[i].HasCalled()) {
+                round_over = false;
+            }
+        }
+        return round_over;
+    }
+
+    public void DisableAllBetting() {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].RpcEnableBetting(false);
+        }
+    }
+
+    public void ResetBets()
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].ResetBets();
+        }
         round_over = false;
         current_bet = 0;
+    }
+
+    public void ResetHand()
+    {
         current_pot = 0;
     }
 
@@ -46,15 +91,7 @@ public class BettingManager : NetworkBehaviour {
         return turn_id;
     }
 
-    private void MoveToNextPlayer() {
-        turn_id++;
-        if (turn_id == game_manager.GetNumRegistered()) {
-            turn_id = 0;
-        }
-        Debug.Log("Betting Manager moved turn to player " + turn_id);
-    }
-
-    //~~~~~~~~~~~~POT FUNCTIONS~~~~~~~~~~~//
+    //~~~~~~~~~~~~POT CONTROL FUNCTIONS~~~~~~~~~~~//
 
 
     public int GetPot()
