@@ -1793,12 +1793,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: -1
   Canvas: {fileID: 1745513689599192}
-  TableCards:
-  - {fileID: 114168328000468484}
-  - {fileID: 114675698530234556}
-  - {fileID: 114452179849155148}
-  - {fileID: 114010540205973864}
-  - {fileID: 114126272497890178}
   TableStacks:
   - {fileID: 114542605696958340}
   - {fileID: 114468048013580564}
@@ -1809,6 +1803,12 @@ MonoBehaviour:
   - {fileID: 114500312128627744}
   - {fileID: 114026390969092834}
   - {fileID: 114747688493219056}
+  TableCardSprites:
+  - {fileID: 114168328000468484}
+  - {fileID: 114675698530234556}
+  - {fileID: 114452179849155148}
+  - {fileID: 114010540205973864}
+  - {fileID: 114126272497890178}
 --- !u!114 &114637057991340760
 MonoBehaviour:
   m_ObjectHideFlags: 1

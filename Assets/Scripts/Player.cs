@@ -9,15 +9,17 @@ public class Player : NetworkBehaviour {
     [SyncVar] public int ID = -1;
 
     public GameObject Canvas;
-    public Image[] TableCards;
-    public Text[] TableStacks;
     private GameObject TurnObjects;
+
+    public Text[] TableStacks;
     private Text PotText;
     private Text ChipText;
 
-    private Image CardA;
-    private Image CardB;
+    public Image[] TableCardSprites;
+    private Image[] MyCardSprites;
     private Dictionary<string, Sprite> Sprites;
+
+    private Card[] MyCards;
 
     private GameManager game_manager;
     private StackManager stack_manager;
@@ -42,9 +44,12 @@ public class Player : NetworkBehaviour {
         PotText = Canvas.transform.Find("Pot").GetComponent<Text>();
         ChipText = Canvas.transform.Find("My Stack").GetComponent<Text>();
 
+        MyCards = new Card[7];
+
+        MyCardSprites = new Image[2];
         LoadSpriteDictionary();
-        CardA = Canvas.transform.Find("Card A").GetComponent<Image>();
-        CardB = Canvas.transform.Find("Card B").GetComponent<Image>();
+        MyCardSprites[0] = Canvas.transform.Find("Card A").GetComponent<Image>();
+        MyCardSprites[1] = Canvas.transform.Find("Card B").GetComponent<Image>();
 
         ID = game_manager.Register();
         stack_manager.SetStack(ID, 500);
@@ -104,6 +109,38 @@ public class Player : NetworkBehaviour {
         TurnObjects.SetActive(on);
     }
 
+    [ClientRpc]
+    public void RpcGetCardFromServer(Card card, int which) {
+        Debug.Log("Client is updating their personal cards");
+        MyCards[which] = card;
+        if (card.String() == "NoneNone")
+        {
+            MyCardSprites[which].enabled = false;
+        }
+        else
+        {
+            MyCardSprites[which].enabled = true;
+            MyCardSprites[which].sprite = GetSpriteByName(card.String());
+        }
+    }
+
+    [ClientRpc]
+    public void RpcGetTableCardFromServer(Card card, int which)
+    {
+        Debug.Log("Client is updating their table cards");
+        MyCards[which + 2] = card;
+        if (card.String() == "NoneNone")
+        {
+            TableCardSprites[which].enabled = false;
+        }
+        else
+        {
+            TableCardSprites[which].enabled = true;
+            TableCardSprites[which].sprite = GetSpriteByName(card.String());
+        }
+    }
+    
+
     //~~~~~~~~~~~~~BETTING~~~~~~~~~~~~~~//
     public void ResetBets() {
         Bets_Are_Up_To_Date = false;
@@ -131,6 +168,8 @@ public class Player : NetworkBehaviour {
 
     public void Fold()
     {
+        MyCardSprites[0].color = new Color(MyCardSprites[0].color.r, MyCardSprites[0].color.g, MyCardSprites[0].color.b, 0.75f);
+        MyCardSprites[1].color = new Color(MyCardSprites[1].color.r, MyCardSprites[1].color.g, MyCardSprites[1].color.b, 0.75f);
         CmdFold();
     }
 
@@ -145,8 +184,6 @@ public class Player : NetworkBehaviour {
     public void UpdateUI() {
         ShowPot();
         UpdateChipCountUI();
-        RpcUpdateCardUI();
-        RpcUpdateTableCardsUI();
         UpdateTableStacks();
     }
 
@@ -156,45 +193,6 @@ public class Player : NetworkBehaviour {
 
     private void UpdateChipCountUI() {
         ChipText.text = "Chip Stack: " + stack_manager.GetStack(ID).ToString();
-    }
-
-    [ClientRpc]
-    public void RpcUpdateCardUI() {
-        Debug.Log("Client is updating their personal cards");
-        if (card_manager.GetCard(ID, 0) == "NoneNone")
-        {
-            CardA.enabled = false;
-        }
-        else
-        {
-            CardA.enabled = true;
-            CardA.sprite = GetSpriteByName(card_manager.GetCard(ID, 0));
-        }
-        if (card_manager.GetCard(ID, 1) == "NoneNone")
-        {
-            CardB.enabled = false;
-        }
-        else
-        {
-            CardB.enabled = true;
-            CardB.sprite = GetSpriteByName(card_manager.GetCard(ID, 1));
-        }
-    }
-
-    [ClientRpc]
-    public void RpcUpdateTableCardsUI()
-    {
-        Debug.Log("Client is updating the table cards");
-        for (int i = 0; i < 5; i++) {
-            if (card_manager.GetTableCard(i) == "NoneNone")
-            {
-                TableCards[i].enabled = false;
-            }
-            else {
-                TableCards[i].enabled = true;
-                TableCards[i].sprite = GetSpriteByName(card_manager.GetTableCard(i));
-            }
-        }
     }
 
     private void UpdateTableStacks()

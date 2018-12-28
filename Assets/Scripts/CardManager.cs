@@ -7,117 +7,55 @@ public class CardManager : NetworkBehaviour {
 
     public Cards Deck;
 
-    //Personal Cards
-    [SyncVar] private Card CardA0;
-    [SyncVar] private Card CardB0;
-    [SyncVar] private Card CardA1;
-    [SyncVar] private Card CardB1;
-    [SyncVar] private Card CardA2;
-    [SyncVar] private Card CardB2;
-    [SyncVar] private Card CardA3;
-    [SyncVar] private Card CardB3;
-    [SyncVar] private Card CardA4;
-    [SyncVar] private Card CardB4;
-    [SyncVar] private Card CardA5;
-    [SyncVar] private Card CardB5;
-    [SyncVar] private Card CardA6;
-    [SyncVar] private Card CardB6;
-    [SyncVar] private Card CardA7;
-    [SyncVar] private Card CardB7;
-    [SyncVar] private Card CardA8;
-    [SyncVar] private Card CardB8;
-
     //Shared Cards
-    [SyncVar] private Card Card1;
-    [SyncVar] private Card Card2;
-    [SyncVar] private Card Card3;
-    [SyncVar] private Card Card4;
-    [SyncVar] private Card Card5;
+    private Card[] TableCards;
 
     private GameManager game_manager;
 
     // Use this for initialization
     void Start () {
-        ClearTable();
+        TableCards = new Card[5];
         game_manager = GetComponent<GameManager>();
+        ClearTable();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
     public IEnumerator ShuffleAndDeal()
     {
         Deck.Shuffle();
-        for (int round = 1; round <= 2; round++)
+        for (int card_round = 0; card_round <= 1; card_round++)
         {
             for (int i = 0; i < game_manager.GetNumRegistered(); i++)
             {
-                FileCard(Deck.GetTopCard(), i, round);
+                GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetTopCard(), card_round);
             }
-            //Wait for network latency
-            yield return new WaitForSeconds(1f);
-            for (int i = 0; i < game_manager.GetNumRegistered(); i++)
-            {
-                GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateCardUI();
-            }
+            yield return new WaitForSeconds(1);
         }
         game_manager.SetGameState(GameState.FirstBet);
     }
 
-    public string GetCard(int ID, int which)
+    public void ClearTable()
     {
-        switch (ID)
+        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            case 0:
-                return (which == 0) ? CardA0.String() : CardB0.String();
-            case 1:
-                return (which == 0) ? CardA1.String() : CardB1.String();
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 1);
         }
-        return "ERROR";
-    }
-
-    public string GetTableCard(int which)
-    {
-        switch (which)
-        {
-            case 0:
-                return Card1.String();
-            case 1:
-                return Card2.String();
-            case 2:
-                return Card3.String();
-            case 3:
-                return Card4.String();
-            case 4:
-                return Card5.String();
+        for (int i = 0; i < 5; i++) {
+            TableCards[i] = Deck.GetBlankCard();
+            for (int p = 0; p < game_manager.GetNumRegistered(); p++)
+            {
+                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 0);
+                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 1);
+                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 2);
+                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 3);
+                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 4);
+            }
         }
-        return "ERROR";
-    }
-
-    private void FileCard(Card card, int ID, int round)
-    {
-        switch (ID)
-        {
-            case 0:
-                if (round == 1) { CardA0 = card; }
-                else CardB0 = card;
-                break;
-            case 1:
-                if (round == 1) { CardA1 = card; }
-                else CardB1 = card;
-                break;
-        }
-    }
-
-    private void ClearTable()
-    {
-        Card1 = Deck.GetBlankCard();
-        Card2 = Deck.GetBlankCard();
-        Card3 = Deck.GetBlankCard();
-        Card4 = Deck.GetBlankCard();
-        Card5 = Deck.GetBlankCard();
     }
 
     //~~~~~~~~~~~~~~Stage Coroutines~~~~~~~~~~~~//
@@ -127,31 +65,15 @@ public class CardManager : NetworkBehaviour {
         //Burn
         Card burn = Deck.GetTopCard();
         Debug.Log("Burning " + burn.String());
-        yield return new WaitForSeconds(1f);
-        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
-        {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
-        }
         //Deal
-        Card1 = Deck.GetTopCard();
-        Debug.Log("Dealing 1: " + Card1.String());
-        yield return new WaitForSeconds(1f);
-        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
-        {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
-        }
-        Card2 = Deck.GetTopCard();
-        Debug.Log("Dealing 2: " + Card2.String());
-        yield return new WaitForSeconds(1f);
-        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
-        {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
-        }
-        Card3 = Deck.GetTopCard();
-        Debug.Log("Dealing 3: " + Card3.String());
-        for (int i = 0; i < game_manager.GetNumRegistered(); i++)
-        {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+        for (int r = 0; r < 3; r++) {
+            TableCards[r] = Deck.GetTopCard();
+            Debug.Log("Dealing " + (r+1).ToString() + ": " + TableCards[r].String());
+            for (int i = 0; i < game_manager.GetNumRegistered(); i++)
+            {
+                GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[r], r);
+            }
+            yield return new WaitForSeconds(1);
         }
         game_manager.SetGameState(GameState.SecondBet);
     }
@@ -163,11 +85,11 @@ public class CardManager : NetworkBehaviour {
         Debug.Log("Burning " + burn.String());
         yield return new WaitForSeconds(1f);
         //Deal
-        Card4 = Deck.GetTopCard();
-        Debug.Log("Dealing 4: " + Card4.String());
+        TableCards[3] = Deck.GetTopCard();
+        Debug.Log("Dealing 4: " + TableCards[3].String());
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[3], 3);
         }
         game_manager.SetGameState(GameState.ThirdBet);
     }
@@ -179,11 +101,11 @@ public class CardManager : NetworkBehaviour {
         Debug.Log("Burning " + burn.String());
         yield return new WaitForSeconds(1f);
         //Deal
-        Card5 = Deck.GetTopCard();
-        Debug.Log("Dealing 5: " + Card5.String());
+        TableCards[3] = Deck.GetTopCard();
+        Debug.Log("Dealing 5: " + TableCards[3].String());
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcUpdateTableCardsUI();
+            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[4], 4);
         }
         game_manager.SetGameState(GameState.FourthBet);
     }
