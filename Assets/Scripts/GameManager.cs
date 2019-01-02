@@ -115,7 +115,8 @@ public class GameManager : NetworkBehaviour {
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATES~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
     private void RunDeal() {
-        Debug.Log("Dealing");
+        Debug.Log("GM: Dealing");
+        card_manager.ClearTable();
         StartCoroutine(card_manager.ShuffleAndDeal());
     }
 

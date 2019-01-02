@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum CardSuit {
-    None = 0,
-    Spades = 1,
-    Clubs = 2,
-    Diamonds = 3,
-    Hearts = 4
+    None = -1,
+    Spades = 0,
+    Clubs = 1,
+    Diamonds = 2,
+    Hearts = 3
 };
 
 public enum CardValue {
-    None = 0,
-    Ace = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    Six = 6,
-    Seven = 7,
-    Eight = 8,
-    Nine = 9,
-    Ten = 10,
-    Jack = 11,
-    Queen = 12,
-    King = 13,
+    None = -1,
+    Two = 0,
+    Three = 1,
+    Four = 2,
+    Five = 3,
+    Six = 4,
+    Seven = 5,
+    Eight = 6,
+    Nine = 7,
+    Ten = 8,
+    Jack = 9,
+    Queen = 10,
+    King = 11,
+    Ace = 12,
 };
 
 public struct Card
@@ -36,6 +36,11 @@ public struct Card
     {
         this.suit = s;
         this.value = v;
+    }
+
+    public bool isGreaterThan(Card other)
+    {
+        return this.value > other.value;
     }
 
     public string String() {
@@ -110,7 +115,7 @@ public class Cards : MonoBehaviour {
 
     public Card GetTopCard() {
         deal_card_id++;
-        Debug.Log("Top Card = " + Deck[deal_card_id - 1].String());
+        //Debug.Log("Top Card = " + Deck[deal_card_id - 1].String());
         return Deck[deal_card_id - 1];
     }
 

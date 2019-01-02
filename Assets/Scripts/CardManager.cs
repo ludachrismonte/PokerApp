@@ -42,19 +42,19 @@ public class CardManager : NetworkBehaviour {
     {
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 1);
+            GameObject.Find("Player" + i.ToString()).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
+            GameObject.Find("Player" + i.ToString()).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 1);
+        }
+        for (int p = 0; p < game_manager.GetNumRegistered(); p++)
+        {
+            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 0);
+            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 1);
+            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 2);
+            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 3);
+            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 4);
         }
         for (int i = 0; i < 5; i++) {
             TableCards[i] = Deck.GetBlankCard();
-            for (int p = 0; p < game_manager.GetNumRegistered(); p++)
-            {
-                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 0);
-                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 1);
-                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 2);
-                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 3);
-                GameObject.Find("Player" + p).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 4);
-            }
         }
     }
 
@@ -101,8 +101,8 @@ public class CardManager : NetworkBehaviour {
         Debug.Log("Burning " + burn.String());
         yield return new WaitForSeconds(1f);
         //Deal
-        TableCards[3] = Deck.GetTopCard();
-        Debug.Log("Dealing 5: " + TableCards[3].String());
+        TableCards[4] = Deck.GetTopCard();
+        Debug.Log("Dealing 5: " + TableCards[4].String());
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[4], 4);

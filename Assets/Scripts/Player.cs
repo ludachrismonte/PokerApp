@@ -20,6 +20,7 @@ public class Player : NetworkBehaviour {
     private Dictionary<string, Sprite> Sprites;
 
     private Card[] MyCards;
+    private Hand MyHandValue;
 
     private GameManager game_manager;
     private StackManager stack_manager;
@@ -111,7 +112,7 @@ public class Player : NetworkBehaviour {
 
     [ClientRpc]
     public void RpcGetCardFromServer(Card card, int which) {
-        Debug.Log("Client is updating their personal cards");
+        Debug.Log("Client is adding " + card.String() + " to thier hand's position " + which.ToString());
         MyCards[which] = card;
         if (card.String() == "NoneNone")
         {
@@ -127,7 +128,7 @@ public class Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcGetTableCardFromServer(Card card, int which)
     {
-        Debug.Log("Client is updating their table cards");
+        Debug.Log("Client is adding " + card.String() + " to table position " + which.ToString());
         MyCards[which + 2] = card;
         if (card.String() == "NoneNone")
         {
@@ -137,6 +138,15 @@ public class Player : NetworkBehaviour {
         {
             TableCardSprites[which].enabled = true;
             TableCardSprites[which].sprite = GetSpriteByName(card.String());
+        }
+        if (card.String() != "NoneNone" && which > 1) {
+            string s = "My Hand\n";
+            for (int i = 0; i < MyCards.Length; i++)
+            {
+                s += MyCards[i].String() + "\n";
+            }
+            Debug.Log(s);
+            MyHandValue = GetComponent<HandDeterminer>().Determine(MyCards);
         }
     }
     
