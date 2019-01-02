@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public enum HandValue
 {
+    None = -1,
     HighCard = 0,
     OnePair = 1,
     TwoPairs = 2,
@@ -20,6 +21,12 @@ public struct Hand
 {
     public HandValue type;
     public Card[] top_five;
+
+    public Hand(HandValue t)
+    {
+        this.type = t;
+        this.top_five = null;
+    }
 
     public Hand(HandValue t, Card[] five)
     {
@@ -61,20 +68,20 @@ public class HandDeterminer : MonoBehaviour {
         //Determine(c);
     }
 
-    // Update is called once per frame
-    void Update () {
-
+    public void Clear()
+    {
+        HandText.text = "";
     }
 
     private void FillTestHand()
     {
         c[0] = new Card(CardSuit.Clubs, CardValue.Four);
-        c[1] = new Card(CardSuit.Spades, CardValue.Ten);
-        c[2] = new Card(CardSuit.Diamonds, CardValue.Four);
-        c[3] = new Card(CardSuit.Clubs, CardValue.Ace);
+        c[1] = new Card(CardSuit.Spades, CardValue.Five);
+        c[2] = new Card(CardSuit.Diamonds, CardValue.Three);
+        c[3] = new Card(CardSuit.Clubs, CardValue.Two);
         c[4] = new Card(CardSuit.Spades, CardValue.Six);
         c[5] = new Card(CardSuit.Clubs, CardValue.Six);
-        c[6] = new Card(CardSuit.Hearts, CardValue.Ace);
+        c[6] = new Card(CardSuit.Hearts, CardValue.Seven);
     }
 
     private void FillCounts(Card[] cards) {
@@ -133,7 +140,59 @@ public class HandDeterminer : MonoBehaviour {
 
     private bool TestForStraightFlush(Card[] cards)
     {
-        return false;
+        CardSuit hot_suit = CardSuit.None;
+        for (int i = 0; i < suit_count.Length; i++)
+        {
+            if (suit_count[i] >= 5)
+            {
+                hot_suit = (CardSuit)i;
+            }
+        }
+        if (hot_suit == CardSuit.None)
+        {
+            return false;
+        }
+        int this_sequnce = 0;
+        CardValue temp_top = CardValue.None;
+        CardValue top_value = CardValue.None;
+        for (int i = value_count.Length - 1; i >= 0; i--)
+        {
+            if (value_count[i] > 0)
+            {
+                if (this_sequnce == 0)
+                {
+                    temp_top = (CardValue)i;
+                }
+                this_sequnce++;
+                if (this_sequnce == 5)
+                {
+                    top_value = temp_top;
+                }
+            }
+            else this_sequnce = 0;
+        }
+        if (top_value == CardValue.None)
+        {
+            return false;
+        }
+        int fill_index = 0;
+        bool got_top = false;
+        for (int i = 0; i < cards.Length && fill_index < 5; i++)
+        {
+            if (cards[i].value == top_value)
+            {
+                top_five[fill_index] = cards[i];
+                fill_index++;
+                got_top = true;
+            }
+            else if (got_top && cards[i].value != cards[i - 1].value)
+            {
+                top_five[fill_index] = cards[i];
+                fill_index++;
+            }
+        }
+        myHand = new Hand(HandValue.StriaghtFlush, top_five);
+        return true;
     }
 
     private bool TestForFourKind(Card[] cards)
@@ -158,7 +217,6 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.FourOfAKind, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
@@ -202,22 +260,19 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.FullHouse, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
     private bool TestForFlush(Card[] cards)
     {
-        bool has_five_of_suit = false;
         CardSuit hot_suit = CardSuit.None;
         for (int i = 0; i < suit_count.Length; i++)
         {
             if (suit_count[i] >= 5) {
-                has_five_of_suit = true;
                 hot_suit = (CardSuit)i;
             }
         }
-        if (!has_five_of_suit) {
+        if (hot_suit == CardSuit.None) {
             return false;
         }
         int fill_index = 0;
@@ -228,13 +283,49 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.Flush, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
     private bool TestForStraight(Card[] cards)
     {
-        return false;
+        int this_sequnce = 0;
+        CardValue temp_top = CardValue.None;
+        CardValue top_value = CardValue.None;
+        for (int i = value_count.Length - 1; i >= 0; i--)
+        {
+            if (value_count[i] > 0)
+            {
+                if (this_sequnce == 0) {
+                    temp_top = (CardValue)i;
+                }
+                this_sequnce++;
+                if (this_sequnce == 5)
+                {
+                    top_value = temp_top;
+                }
+            }
+            else this_sequnce = 0;
+        }
+        if (top_value == CardValue.None) {
+            return false;
+        }
+        int fill_index = 0;
+        bool got_top = false;
+        for (int i = 0; i < cards.Length && fill_index < 5; i++)
+        {
+            if (cards[i].value == top_value)
+            {
+                top_five[fill_index] = cards[i];
+                fill_index++;
+                got_top = true;
+            }
+            else if (got_top && cards[i].value != cards[i-1].value) {
+                top_five[fill_index] = cards[i];
+                fill_index++;
+            }
+        }
+        myHand = new Hand(HandValue.Straight, top_five);
+        return true;
     }
 
     private bool TestForThreeKind(Card[] cards)
@@ -260,7 +351,6 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.ThreeOfAKind, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
@@ -312,7 +402,6 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.TwoPairs, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
@@ -346,7 +435,6 @@ public class HandDeterminer : MonoBehaviour {
             }
         }
         myHand = new Hand(HandValue.OnePair, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
@@ -357,57 +445,23 @@ public class HandDeterminer : MonoBehaviour {
             top_five[i] = cards[i];
         }
         myHand = new Hand(HandValue.HighCard, top_five);
-        Debug.Log(myHand.String());
         return true;
     }
 
     public Hand Determine(Card[] cards) {
-        PrintCards(cards);
         Sort(cards);
-        PrintCards(cards);
+        //PrintCards(cards);
         ResetCounts();
         FillCounts(cards);
-        if (TestForStraightFlush(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForFourKind(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForFullHouse(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForFlush(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForStraight(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForThreeKind(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForTwoPair(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        else if (TestForOnePair(cards))
-        {
-            HandText.text = myHand.type.ToString();
-            return myHand;
-        }
-        HighCard(cards);
+        if (TestForStraightFlush(cards)) { }
+        else if (TestForFourKind(cards)) { }
+        else if (TestForFullHouse(cards)) { }
+        else if (TestForFlush(cards)) { }
+        else if (TestForStraight(cards)) { }
+        else if (TestForThreeKind(cards)) { }
+        else if (TestForTwoPair(cards)) { }
+        else if (TestForOnePair(cards)) { }
+        else if (HighCard(cards)) { }
         HandText.text = myHand.type.ToString();
         return myHand;
     }

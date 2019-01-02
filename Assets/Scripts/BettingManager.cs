@@ -50,7 +50,9 @@ public class BettingManager : NetworkBehaviour {
         {
             turn_id = 0;
         }
-        players[turn_id].RpcEnableBetting(true);
+        if (!players[turn_id].HasCalled()) {
+            players[turn_id].RpcEnableBetting(true);
+        }
         Debug.Log("Betting Manager moved turn to player " + turn_id);
     }
 

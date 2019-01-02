@@ -110,7 +110,6 @@ public class Cards : MonoBehaviour {
     // Use this for initialization
     void Start () {
         deal_card_id = 0;
-
     }
 
     public Card GetTopCard() {

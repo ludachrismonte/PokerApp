@@ -22,8 +22,6 @@ public enum GameState
 
 public class GameManager : NetworkBehaviour {
 
-    private bool Proceed = false;
-
     private GameState game_state;
 
     [SyncVar] public int num_registered;
@@ -99,6 +97,7 @@ public class GameManager : NetworkBehaviour {
     public void StartGame()
     {
         betting_manager.InitializePlayerList(num_registered);
+        card_manager.ResetTable();
         SetGameState(GameState.Deal);
     }
 
@@ -116,7 +115,6 @@ public class GameManager : NetworkBehaviour {
 
     private void RunDeal() {
         Debug.Log("GM: Dealing");
-        card_manager.ClearTable();
         StartCoroutine(card_manager.ShuffleAndDeal());
     }
 
@@ -198,7 +196,9 @@ public class GameManager : NetworkBehaviour {
     private void RunReset()
     {
         Debug.Log("RunReset");
+        card_manager.ResetTable();
         betting_manager.ResetBets();
         betting_manager.ResetHand();
+        SetGameState(GameState.Deal);
     }
 }

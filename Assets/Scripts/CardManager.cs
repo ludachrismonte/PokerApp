@@ -16,13 +16,8 @@ public class CardManager : NetworkBehaviour {
     void Start () {
         TableCards = new Card[5];
         game_manager = GetComponent<GameManager>();
-        ClearTable();
+        ResetTable();
     }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
 
     public IEnumerator ShuffleAndDeal()
     {
@@ -38,8 +33,9 @@ public class CardManager : NetworkBehaviour {
         game_manager.SetGameState(GameState.FirstBet);
     }
 
-    public void ClearTable()
+    public void ResetTable()
     {
+        Deck.Reset();
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
             GameObject.Find("Player" + i.ToString()).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
@@ -75,6 +71,7 @@ public class CardManager : NetworkBehaviour {
             }
             yield return new WaitForSeconds(1);
         }
+        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.SecondBet);
     }
 
@@ -91,6 +88,7 @@ public class CardManager : NetworkBehaviour {
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[3], 3);
         }
+        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.ThirdBet);
     }
 
@@ -107,6 +105,7 @@ public class CardManager : NetworkBehaviour {
         {
             GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[4], 4);
         }
+        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.FourthBet);
     }
 }

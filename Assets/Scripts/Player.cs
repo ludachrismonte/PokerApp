@@ -26,11 +26,12 @@ public class Player : NetworkBehaviour {
     private StackManager stack_manager;
     private CardManager card_manager;
     private BettingManager betting_manager;
+    private HandDeterminer hand_determiner;
 
     private int my_bet;
 
     [SyncVar] private bool Is_In_Hand;
-    [SyncVar] private bool Bets_Are_Up_To_Date;
+    [SyncVar] public bool Bets_Are_Up_To_Date;
 
     private float SlowConnectionTimer;
 
@@ -40,12 +41,14 @@ public class Player : NetworkBehaviour {
         stack_manager = game_manager.gameObject.GetComponent<StackManager>();
         card_manager = game_manager.gameObject.GetComponent<CardManager>();
         betting_manager = game_manager.gameObject.GetComponent<BettingManager>();
+        hand_determiner = GetComponent<HandDeterminer>();
         TurnObjects = Canvas.transform.Find("TurnObjects").gameObject;
         TurnObjects.SetActive(false);
         PotText = Canvas.transform.Find("Pot").GetComponent<Text>();
         ChipText = Canvas.transform.Find("My Stack").GetComponent<Text>();
 
         MyCards = new Card[7];
+        MyHandValue = new Hand(HandValue.None);
 
         MyCardSprites = new Image[2];
         LoadSpriteDictionary();
@@ -71,6 +74,9 @@ public class Player : NetworkBehaviour {
         {
             SlowConnectionTimer = 0f;
             UpdateUI();
+        }
+        if (MyHandValue.type != HandValue.None) {
+            //Debug.Log(MyHandValue.String());
         }
     }
 
@@ -123,6 +129,9 @@ public class Player : NetworkBehaviour {
             MyCardSprites[which].enabled = true;
             MyCardSprites[which].sprite = GetSpriteByName(card.String());
         }
+        if (which == 0) {
+            hand_determiner.Clear();
+        }
     }
 
     [ClientRpc]
@@ -140,13 +149,7 @@ public class Player : NetworkBehaviour {
             TableCardSprites[which].sprite = GetSpriteByName(card.String());
         }
         if (card.String() != "NoneNone" && which > 1) {
-            string s = "My Hand\n";
-            for (int i = 0; i < MyCards.Length; i++)
-            {
-                s += MyCards[i].String() + "\n";
-            }
-            Debug.Log(s);
-            MyHandValue = GetComponent<HandDeterminer>().Determine(MyCards);
+            MyHandValue = hand_determiner.Determine(MyCards);
         }
     }
     
@@ -164,12 +167,12 @@ public class Player : NetworkBehaviour {
         if (my_bet > stack_manager.GetStack(ID)) {
             Debug.Log("Can't bet more than my stack");
         }
-        Bets_Are_Up_To_Date = true;
         CmdBet();
     }
 
     [Command]
     private void CmdBet() {
+        Bets_Are_Up_To_Date = true;
         betting_manager.ServerBet(ID, my_bet);
         stack_manager.ModStack(ID, -my_bet);
     }
