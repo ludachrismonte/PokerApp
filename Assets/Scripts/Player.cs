@@ -76,7 +76,7 @@ public class Player : NetworkBehaviour {
             UpdateUI();
         }
         if (MyHandValue.type != HandValue.None) {
-            //Debug.Log(MyHandValue.String());
+            Debug.Log(MyHandValue.String());
         }
     }
 

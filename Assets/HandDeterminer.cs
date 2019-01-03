@@ -79,9 +79,9 @@ public class HandDeterminer : MonoBehaviour {
         test_hand[1] = new Card(CardSuit.Clubs, CardValue.Five);
         test_hand[2] = new Card(CardSuit.Clubs, CardValue.Three);
         test_hand[3] = new Card(CardSuit.Clubs, CardValue.Ace);
-        test_hand[4] = new Card(CardSuit.Spades, CardValue.Six);
-        test_hand[5] = new Card(CardSuit.Clubs, CardValue.Six);
-        test_hand[6] = new Card(CardSuit.Diamonds, CardValue.Seven);
+        test_hand[4] = new Card(CardSuit.Clubs, CardValue.Two);
+        test_hand[5] = new Card(CardSuit.Clubs, CardValue.Nine);
+        test_hand[6] = new Card(CardSuit.Clubs, CardValue.Jack);
     }
 
     private void FillCounts(Card[] cards) {
@@ -187,12 +187,23 @@ public class HandDeterminer : MonoBehaviour {
             }
             else this_sequnce = 0;
         }
+        //Check Low Ace
+        bool get_low_ace = false;
+        if (temp_value_count[12] > 0)
+        {
+            this_sequnce++;
+            if (this_sequnce == 5)
+            {
+                get_low_ace = true;
+                top_value = temp_top;
+            }
+        }
         if (top_value == CardValue.None)
         {
             return false;
         }
         int fill_index = 0;
-        for (int i = 0; i < hot_cards.Count && fill_index < 5; i++)
+        for (int i = 0; i < hot_cards.Count && ((fill_index < 5 && !get_low_ace) || (fill_index < 4 && get_low_ace)); i++)
         {
             if (hot_cards[i].value == top_value)
             {
@@ -203,6 +214,10 @@ public class HandDeterminer : MonoBehaviour {
             {
                 top_five[fill_index] = hot_cards[i];
                 fill_index++;
+            }
+            if (get_low_ace && hot_cards[i].value == CardValue.Ace)
+            {
+                top_five[4] = hot_cards[i];
             }
         }
         myHand = new Hand(HandValue.StraightFlush, top_five);
@@ -320,12 +335,23 @@ public class HandDeterminer : MonoBehaviour {
             }
             else this_sequnce = 0;
         }
+        //Check Low Ace
+        bool get_low_ace = false;
+        if (value_count[12] > 0)
+        {
+            this_sequnce++;
+            if (this_sequnce == 5)
+            {
+                get_low_ace = true;
+                top_value = temp_top;
+            }
+        }
         if (top_value == CardValue.None) {
             return false;
         }
         int fill_index = 0;
         bool got_top = false;
-        for (int i = 0; i < cards.Length && fill_index < 5; i++)
+        for (int i = 0; i < cards.Length && ((fill_index < 5 && !get_low_ace) || (fill_index < 4 && get_low_ace)); i++)
         {
             if (cards[i].value == top_value)
             {
@@ -336,6 +362,9 @@ public class HandDeterminer : MonoBehaviour {
             else if (got_top && cards[i].value != cards[i-1].value) {
                 top_five[fill_index] = cards[i];
                 fill_index++;
+            }
+            if (get_low_ace && cards[i].value == CardValue.Ace) {
+                top_five[4] = cards[i];
             }
         }
         myHand = new Hand(HandValue.Straight, top_five);
