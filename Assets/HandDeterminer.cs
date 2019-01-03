@@ -192,16 +192,14 @@ public class HandDeterminer : MonoBehaviour {
             return false;
         }
         int fill_index = 0;
-        bool got_top = false;
         for (int i = 0; i < hot_cards.Count && fill_index < 5; i++)
         {
             if (hot_cards[i].value == top_value)
             {
                 top_five[fill_index] = hot_cards[i];
                 fill_index++;
-                got_top = true;
             }
-            else if (got_top && hot_cards[i].value != hot_cards[i - 1].value)
+            else if (fill_index > 0)
             {
                 top_five[fill_index] = hot_cards[i];
                 fill_index++;
