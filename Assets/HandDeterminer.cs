@@ -52,7 +52,7 @@ public class HandDeterminer : MonoBehaviour {
     public int[] value_count;
     public Card[] top_five;
 
-    public Card[] c;
+    public Card[] test_hand;
 
     public Text HandText;
    
@@ -63,9 +63,9 @@ public class HandDeterminer : MonoBehaviour {
         top_five = new Card[5];
         HandText.text = "";
 
-        c = new Card[7];
-        FillTestHand();
-        Debug.Log(Determine(c).String());
+        //test_hand = new Card[7];
+        //FillTestHand();
+        //Debug.Log(Determine(test_hand).String());
     }
 
     public void Clear()
@@ -75,13 +75,13 @@ public class HandDeterminer : MonoBehaviour {
 
     private void FillTestHand()
     {
-        c[0] = new Card(CardSuit.Clubs, CardValue.Four);
-        c[1] = new Card(CardSuit.Clubs, CardValue.Five);
-        c[2] = new Card(CardSuit.Clubs, CardValue.Three);
-        c[3] = new Card(CardSuit.Clubs, CardValue.Ace);
-        c[4] = new Card(CardSuit.Spades, CardValue.Six);
-        c[5] = new Card(CardSuit.Clubs, CardValue.Six);
-        c[6] = new Card(CardSuit.Diamonds, CardValue.Seven);
+        test_hand[0] = new Card(CardSuit.Clubs, CardValue.Four);
+        test_hand[1] = new Card(CardSuit.Clubs, CardValue.Five);
+        test_hand[2] = new Card(CardSuit.Clubs, CardValue.Three);
+        test_hand[3] = new Card(CardSuit.Clubs, CardValue.Ace);
+        test_hand[4] = new Card(CardSuit.Spades, CardValue.Six);
+        test_hand[5] = new Card(CardSuit.Clubs, CardValue.Six);
+        test_hand[6] = new Card(CardSuit.Diamonds, CardValue.Seven);
     }
 
     private void FillCounts(Card[] cards) {
