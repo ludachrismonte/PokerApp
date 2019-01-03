@@ -14,7 +14,7 @@ public enum HandValue
     Flush = 5,
     FullHouse = 6,
     FourOfAKind = 7,
-    StriaghtFlush = 8,
+    StraightFlush = 8,
 };
 
 public struct Hand
@@ -63,9 +63,9 @@ public class HandDeterminer : MonoBehaviour {
         top_five = new Card[5];
         HandText.text = "";
 
-        //c = new Card[7];
-        //FillTestHand();
-        //Determine(c);
+        c = new Card[7];
+        FillTestHand();
+        Debug.Log(Determine(c).String());
     }
 
     public void Clear()
@@ -76,12 +76,12 @@ public class HandDeterminer : MonoBehaviour {
     private void FillTestHand()
     {
         c[0] = new Card(CardSuit.Clubs, CardValue.Four);
-        c[1] = new Card(CardSuit.Spades, CardValue.Five);
-        c[2] = new Card(CardSuit.Diamonds, CardValue.Three);
-        c[3] = new Card(CardSuit.Clubs, CardValue.Two);
+        c[1] = new Card(CardSuit.Clubs, CardValue.Five);
+        c[2] = new Card(CardSuit.Clubs, CardValue.Three);
+        c[3] = new Card(CardSuit.Clubs, CardValue.Ace);
         c[4] = new Card(CardSuit.Spades, CardValue.Six);
         c[5] = new Card(CardSuit.Clubs, CardValue.Six);
-        c[6] = new Card(CardSuit.Hearts, CardValue.Seven);
+        c[6] = new Card(CardSuit.Diamonds, CardValue.Seven);
     }
 
     private void FillCounts(Card[] cards) {
@@ -152,12 +152,28 @@ public class HandDeterminer : MonoBehaviour {
         {
             return false;
         }
+        List<Card> hot_cards = new List<Card>();
+        for (int i = 0; i < cards.Length; i++)
+        {
+            if (cards[i].suit == hot_suit)
+            {
+                hot_cards.Add(cards[i]);
+            }
+        }
+        int[] temp_value_count = new int[13];
+        for (int i = 0; i < hot_cards.Count; i++)
+        {
+            if (hot_cards[i].value != CardValue.None)
+            {
+                temp_value_count[(int)hot_cards[i].value]++;
+            }
+        }
         int this_sequnce = 0;
         CardValue temp_top = CardValue.None;
         CardValue top_value = CardValue.None;
-        for (int i = value_count.Length - 1; i >= 0; i--)
+        for (int i = temp_value_count.Length - 1; i >= 0; i--)
         {
-            if (value_count[i] > 0)
+            if (temp_value_count[i] > 0)
             {
                 if (this_sequnce == 0)
                 {
@@ -177,21 +193,21 @@ public class HandDeterminer : MonoBehaviour {
         }
         int fill_index = 0;
         bool got_top = false;
-        for (int i = 0; i < cards.Length && fill_index < 5; i++)
+        for (int i = 0; i < hot_cards.Count && fill_index < 5; i++)
         {
-            if (cards[i].value == top_value)
+            if (hot_cards[i].value == top_value)
             {
-                top_five[fill_index] = cards[i];
+                top_five[fill_index] = hot_cards[i];
                 fill_index++;
                 got_top = true;
             }
-            else if (got_top && cards[i].value != cards[i - 1].value)
+            else if (got_top && hot_cards[i].value != hot_cards[i - 1].value)
             {
-                top_five[fill_index] = cards[i];
+                top_five[fill_index] = hot_cards[i];
                 fill_index++;
             }
         }
-        myHand = new Hand(HandValue.StriaghtFlush, top_five);
+        myHand = new Hand(HandValue.StraightFlush, top_five);
         return true;
     }
 
