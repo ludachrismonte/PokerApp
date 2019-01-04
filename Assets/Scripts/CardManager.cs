@@ -26,7 +26,7 @@ public class CardManager : NetworkBehaviour {
         {
             for (int i = 0; i < game_manager.GetNumRegistered(); i++)
             {
-                GameObject.Find("Player" + i).GetComponent<Player>().RpcGetCardFromServer(Deck.GetTopCard(), card_round);
+                GameObject.Find("Player" + i).GetComponent<PokerPlayer>().RpcGetCardFromServer(Deck.GetTopCard(), card_round);
             }
             yield return new WaitForSeconds(1);
         }
@@ -38,16 +38,16 @@ public class CardManager : NetworkBehaviour {
         Deck.Reset();
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i.ToString()).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
-            GameObject.Find("Player" + i.ToString()).GetComponent<Player>().RpcGetCardFromServer(Deck.GetBlankCard(), 1);
+            GameObject.Find("Player" + i.ToString()).GetComponent<PokerPlayer>().RpcGetCardFromServer(Deck.GetBlankCard(), 0);
+            GameObject.Find("Player" + i.ToString()).GetComponent<PokerPlayer>().RpcGetCardFromServer(Deck.GetBlankCard(), 1);
         }
         for (int p = 0; p < game_manager.GetNumRegistered(); p++)
         {
-            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 0);
-            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 1);
-            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 2);
-            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 3);
-            GameObject.Find("Player" + p.ToString()).GetComponent<Player>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 4);
+            GameObject.Find("Player" + p.ToString()).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 0);
+            GameObject.Find("Player" + p.ToString()).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 1);
+            GameObject.Find("Player" + p.ToString()).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 2);
+            GameObject.Find("Player" + p.ToString()).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 3);
+            GameObject.Find("Player" + p.ToString()).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(Deck.GetBlankCard(), 4);
         }
         for (int i = 0; i < 5; i++) {
             TableCards[i] = Deck.GetBlankCard();
@@ -67,11 +67,10 @@ public class CardManager : NetworkBehaviour {
             Debug.Log("Dealing " + (r+1).ToString() + ": " + TableCards[r].String());
             for (int i = 0; i < game_manager.GetNumRegistered(); i++)
             {
-                GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[r], r);
+                GameObject.Find("Player" + i).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(TableCards[r], r);
             }
             yield return new WaitForSeconds(1);
         }
-        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.SecondBet);
     }
 
@@ -86,9 +85,8 @@ public class CardManager : NetworkBehaviour {
         Debug.Log("Dealing 4: " + TableCards[3].String());
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[3], 3);
+            GameObject.Find("Player" + i).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(TableCards[3], 3);
         }
-        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.ThirdBet);
     }
 
@@ -103,9 +101,8 @@ public class CardManager : NetworkBehaviour {
         Debug.Log("Dealing 5: " + TableCards[4].String());
         for (int i = 0; i < game_manager.GetNumRegistered(); i++)
         {
-            GameObject.Find("Player" + i).GetComponent<Player>().RpcGetTableCardFromServer(TableCards[4], 4);
+            GameObject.Find("Player" + i).GetComponent<PokerPlayer>().RpcGetTableCardFromServer(TableCards[4], 4);
         }
-        yield return new WaitForSeconds(1f);
         game_manager.SetGameState(GameState.FourthBet);
     }
 }

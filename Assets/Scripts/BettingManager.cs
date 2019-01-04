@@ -12,7 +12,7 @@ public class BettingManager : NetworkBehaviour {
     [SyncVar] public int turn_id;
     [SyncVar] public bool round_over;
 
-    public List<Player> players;
+    public List<PokerPlayer> players;
 
     // Use this for initialization
     void Start() {
@@ -33,7 +33,7 @@ public class BettingManager : NetworkBehaviour {
     public void InitializePlayerList(int num_registered) {
         Debug.Log("Betting Manager is initializing player list to size " + num_registered);
         for (int i = 0; i < num_registered; i++) {
-            players.Add(GameObject.Find("Player" + i).GetComponent<Player>());
+            players.Add(GameObject.Find("Player" + i).GetComponent<PokerPlayer>());
         }
     }
 
@@ -84,6 +84,16 @@ public class BettingManager : NetworkBehaviour {
         current_bet = 0;
     }
 
+    public void ResetAllExcept(int ID)
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i].GetID() != ID) {
+                players[i].ResetBets();
+            }
+        }
+    }
+
     public void ResetHand()
     {
         current_pot = 0;
@@ -95,6 +105,10 @@ public class BettingManager : NetworkBehaviour {
 
     //~~~~~~~~~~~~POT CONTROL FUNCTIONS~~~~~~~~~~~//
 
+    public int GetCurrentBet()
+    {
+        return current_bet;
+    }
 
     public int GetPot()
     {
@@ -108,13 +122,13 @@ public class BettingManager : NetworkBehaviour {
 
     //~~~~~~~~~~~~~~ACTIONS~~~~~~~~~~~~~~//
 
-    public bool ServerCall(int ID, int amount) {
+    public bool ServerCall(int ID) {
         if (ID != turn_id) {
             Debug.LogError("Cannot Call, " + ID + " it's not your turn");
             return false;
         }
 
-        current_pot += amount;
+        current_pot += current_bet;
         MoveToNextPlayer();
         return true;
     }
@@ -129,12 +143,13 @@ public class BettingManager : NetworkBehaviour {
 
         if (amount < current_bet * 2)
         {
-            Debug.LogError("Must bet at least twice the current bet");
+            Debug.LogError(amount.ToString() + " must bet at least twice the current bet of " + current_bet.ToString());
             return false;
         }
 
         current_bet = amount;
         current_pot += amount;
+        ResetAllExcept(ID);
         MoveToNextPlayer();
         return true;
     }

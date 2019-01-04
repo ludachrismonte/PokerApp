@@ -29,12 +29,14 @@ public class GameManager : NetworkBehaviour {
 
     private CardManager card_manager;
     private BettingManager betting_manager;
+    private PayoutManager payout_manager;
 
     // Use this for initialization
     void Start () {
         num_registered = 0;
         card_manager = GetComponent<CardManager>();
         betting_manager = GetComponent<BettingManager>();
+        payout_manager = GetComponent<PayoutManager>();
         Debug.Log("Waiting for players to start...");
     }
 
@@ -97,6 +99,7 @@ public class GameManager : NetworkBehaviour {
     public void StartGame()
     {
         betting_manager.InitializePlayerList(num_registered);
+        payout_manager.InitializePlayerList(num_registered);
         card_manager.ResetTable();
         SetGameState(GameState.Deal);
     }
@@ -190,6 +193,7 @@ public class GameManager : NetworkBehaviour {
     private void RunPayout()
     {
         Debug.Log("RunPayout");
+        payout_manager.RunPayout();
         game_state = GameState.Reset;
     }
 
