@@ -81,7 +81,7 @@ public class HandDeterminer : MonoBehaviour {
         suit_count = new int[4];
         value_count = new int[13];
         top_five = new Card[5];
-        HandText.text = "";
+        Clear();
 
         //test_hand = new Card[7];
         //FillTestHand();
@@ -511,7 +511,20 @@ public class HandDeterminer : MonoBehaviour {
         return true;
     }
 
-    public Hand Determine(Card[] cards) {
+    private Card[] MakeArray(Card[] personal_cards) {
+        Card[] cards = new Card[7];
+        cards[0] = personal_cards[0];
+        cards[1] = personal_cards[1];
+        cards[2] = TableCardsManager.TCManager.TableCards[0];
+        cards[3] = TableCardsManager.TCManager.TableCards[1];
+        cards[4] = TableCardsManager.TCManager.TableCards[2];
+        cards[5] = TableCardsManager.TCManager.TableCards[3];
+        cards[6] = TableCardsManager.TCManager.TableCards[4];
+        return cards;
+    }
+
+    public Hand Determine(Card[] personal_cards) {
+        Card[] cards = MakeArray(personal_cards);
         Sort(cards);
         //PrintCards(cards);
         ResetCounts();

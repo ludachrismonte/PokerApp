@@ -21,13 +21,6 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks {
 
     public int playerInGame;
 
-    //Delayed Start
-    private bool readyToStart;
-    public float startingTime;
-    private float lessThanMaxPlayers;
-    private float atMaxPlayer;
-    private float timeToStart;
-
     private void Awake()
     {
         if (PhotonRoom.room == null)
@@ -63,10 +56,6 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks {
     void Start()
     {
         PV = GetComponent<PhotonView>();
-        readyToStart = false;
-        lessThanMaxPlayers = startingTime;
-        atMaxPlayer = 6;
-        timeToStart = startingTime;
     }
 
     public override void OnJoinedRoom()

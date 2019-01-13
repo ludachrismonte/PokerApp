@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,7 +51,90 @@ public struct Card
 
 public class Cards : MonoBehaviour {
 
-    private List<Card> Deck = new List<Card> {
+    private PhotonView PV;
+
+    public static Cards cards;
+
+    private List<Card> Deck;
+
+    private int deal_card_id;
+
+    private void Awake()
+    {
+        if (Cards.cards == null)
+        {
+            Cards.cards = this;
+        }
+        else
+        {
+            if (Cards.cards != this)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    // Use this for initialization
+    void Start() {
+        PV = GetComponent<PhotonView>();
+        deal_card_id = 0;
+        Reset();
+    }
+
+    public Card GetTopCard() {
+        deal_card_id++;
+        //Debug.Log("Top Card = " + Deck[deal_card_id - 1].String());
+        return Deck[deal_card_id - 1];
+    }
+
+    public Card GetBlankCard()
+    {
+        return new Card(CardSuit.None, CardValue.None);
+    }
+
+    public void Shuffle() {
+        if (!PhotonNetwork.IsMasterClient) {
+            return;
+        }
+        Debug.Log("Shuffling");
+        List<int> straight_order = new List<int>() {
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+            31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+            41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+        };
+        int[] new_order = new int[52];
+
+        int max = straight_order.Count;
+        int i = 0;
+        while (max > 0)
+        {
+            int offset = UnityEngine.Random.Range(0, max);
+            new_order[i] = straight_order[offset];
+            straight_order.RemoveAt(offset);
+            max -= 1;
+            i++;
+        }
+        PV.RPC("RPC_Shuffle", RpcTarget.All, new_order);
+    }
+
+    [PunRPC]
+    public void RPC_Shuffle(int[] new_order){
+        Reset();
+        List<Card> tmp = new List<Card>();
+        for (int i = 0; i < new_order.Length; i++) {
+            tmp.Add(Deck[new_order[i]]);
+        }
+        Deck = tmp;
+    }
+
+    public void Reset() {
+        deal_card_id = 0;
+        if (Deck != null) {
+            Deck.Clear();
+        }
+        Deck = new List<Card> {
         new Card(CardSuit.Spades, CardValue.Ace),
         new Card(CardSuit.Spades, CardValue.King),
         new Card(CardSuit.Spades, CardValue.Queen),
@@ -104,40 +188,5 @@ public class Cards : MonoBehaviour {
         new Card(CardSuit.Clubs, CardValue.Three),
         new Card(CardSuit.Clubs, CardValue.Two),
     };
-
-    private int deal_card_id;
-
-    // Use this for initialization
-    void Start () {
-        deal_card_id = 0;
-    }
-
-    public Card GetTopCard() {
-        deal_card_id++;
-        //Debug.Log("Top Card = " + Deck[deal_card_id - 1].String());
-        return Deck[deal_card_id - 1];
-    }
-
-    public Card GetBlankCard()
-    {
-        return new Card(CardSuit.None, CardValue.None);
-    }
-
-    public void Shuffle() {
-        List<Card> tmp = new List<Card>();
-
-        int max = Deck.Count;
-        while (max > 0)
-        {
-            int offset = UnityEngine.Random.Range(0, max);
-            tmp.Add(Deck[offset]);
-            Deck.RemoveAt(offset);
-            max -= 1;
-        }
-        Deck = tmp;
-    }
-
-    public void Reset() {
-        deal_card_id = 0;
     }
 }

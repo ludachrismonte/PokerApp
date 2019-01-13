@@ -30,4 +30,25 @@ MonoBehaviour:
   RpcList:
   - RPC_CreatePlayer
   - RPC_LoadedGameScene
+  - RPC_ModStack
+  - RPC_SetStack
+  - RPC_Ready
+  - RPC_AddToPot
+  - RPC_SetPot
+  - RPC_SetCurrentBet
+  - RPC_ToggleStartButton
+  - RPC_AddPlayerTab
+  - RPC_Deal
+  - RPC_SetGameState
+  - RPC_Shuffle
+  - RPC_SitDown
+  - RPC_MoveToNextPlayer
+  - RPC_StartRound
+  - RPC_TellMasterToMoveToNextPlayer
+  - RPC_ResetAllExcept
+  - RPC_Set_IsIn
+  - RPC_Set_IsUpToDate
+  - RPC_BurnAndFlop
+  - RPC_BurnAndRiver
+  - RPC_BurnAndTurn
   DisableAutoOpenWizard: 1

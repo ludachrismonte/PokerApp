@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class BetSlider : MonoBehaviour {
 
-    private PokerPlayer player;
+    public PokerPlayer player;
     private Slider slider;
 
     private Text BetText;
 
-    private int MaxValue;
-
-	// Use this for initialization
-	void Start () {
-        player = transform.parent.transform.parent.
-            transform.parent.GetComponent<PokerPlayer>();
+    private void Awake()
+    {
         slider = GetComponent<Slider>();
+    }
+
+    // Use this for initialization
+    void Start () {
         BetText = transform.Find("BetAmountText").GetComponent<Text>();
         slider.maxValue = player.GetStack();
         OnValueChange();

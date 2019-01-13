@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
 
 public enum GameState
 {
@@ -20,60 +20,105 @@ public enum GameState
     WaitingLimbo = 13
 };
 
-public class GameManager : NetworkBehaviour {
+public class GameManager : MonoBehaviour {
 
-    private GameState game_state;
+    private PhotonView PV;
 
-    [SyncVar] public int num_registered;
-    [SyncVar] private int dealer_id;
+    public static GameManager game_manager;
+
+    public GameObject StartButton;
+    public GameState game_state;
+    public Text game_state_text;
+
+    public List<PokerPlayer> AllPlayers;
+    private int dealer_id;
 
     private CardManager card_manager;
     private BettingManager betting_manager;
     private PayoutManager payout_manager;
 
+    private void Awake()
+    {
+        if (GameManager.game_manager == null)
+        {
+            GameManager.game_manager = this;
+        }
+        else
+        {
+            if (GameManager.game_manager != this)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+        PV = GetComponent<PhotonView>();
+    }
+
     // Use this for initialization
     void Start () {
-        num_registered = 0;
+        AllPlayers = new List<PokerPlayer>();
         card_manager = GetComponent<CardManager>();
         betting_manager = GetComponent<BettingManager>();
         payout_manager = GetComponent<PayoutManager>();
         Debug.Log("Waiting for players to start...");
+        game_state_text.text = "Game State: Waiting to start...";
+    }
+
+    public void Ready()
+    {
+        PV.RPC("RPC_Ready", RpcTarget.All);
+        PV.RPC("RPC_ToggleStartButton", RpcTarget.AllBuffered, false);
+    }
+
+    [PunRPC]
+    private void RPC_ToggleStartButton(bool state)
+    {
+        StartButton.SetActive(state);
+    }
+
+    [PunRPC]
+    private void RPC_Ready()
+    {
+        card_manager.ResetTable();
+        SetGameState(GameState.Deal);
     }
 
     // Control Gameloop
     void Update () {
+        if (!PhotonNetwork.IsMasterClient) {
+            return;
+        }
         switch (game_state)
         {   
             case GameState.Deal:
-                game_state = GameState.WaitingLimbo;
+                SetGameState(GameState.WaitingLimbo);
                 RunDeal();
                 break;
             case GameState.FirstBet:
-                game_state = GameState.BettingLimbo;
+                SetGameState(GameState.BettingLimbo);
                 StartCoroutine(RunFirstBet());
                 break;
             case GameState.Flop:
-                game_state = GameState.WaitingLimbo;
+                SetGameState(GameState.WaitingLimbo);
                 RunFlop();
                 break;
             case GameState.SecondBet:
-                game_state = GameState.BettingLimbo;
+                SetGameState(GameState.BettingLimbo);
                 StartCoroutine(RunSecondBet());
                 break;
             case GameState.Turn:
-                game_state = GameState.WaitingLimbo;
+                SetGameState(GameState.WaitingLimbo);
                 RunTurn();
                 break;
             case GameState.ThirdBet:
-                game_state = GameState.BettingLimbo;
+                SetGameState(GameState.BettingLimbo);
                 StartCoroutine(RunThirdBet());
                 break;
             case GameState.River:
-                game_state = GameState.WaitingLimbo;
+                SetGameState(GameState.WaitingLimbo);
                 RunRiver();
                 break;
             case GameState.FourthBet:
-                game_state = GameState.BettingLimbo;
+                SetGameState(GameState.BettingLimbo);
                 StartCoroutine(RunFourthBet());
                 break;
             case GameState.Payout:
@@ -85,27 +130,31 @@ public class GameManager : NetworkBehaviour {
         }
     }
 
-    public int Register() {
-        num_registered++;
-        return num_registered - 1;
+    public int Register(PokerPlayer p) {
+        AllPlayers.Add(p);
+        PlayerTabsManager.player_tabs_manager.AssignLocations();
+        return AllPlayers.Count - 1;
     }
 
     public int GetNumRegistered() {
-        return num_registered;
+        return AllPlayers.Count;
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATE SETS~~~~~~~~~~~~~~~~~~~~~~//
 
-    public void StartGame()
-    {
-        betting_manager.InitializePlayerList(num_registered);
-        payout_manager.InitializePlayerList(num_registered);
-        card_manager.ResetTable();
-        SetGameState(GameState.Deal);
+    public void SetGameState(GameState state) {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+        PV.RPC("RPC_SetGameState", RpcTarget.All, state);
     }
 
-    public void SetGameState(GameState state) {
+    [PunRPC]
+    private void RPC_SetGameState(GameState state)
+    {
         game_state = state;
+        game_state_text.text = "Game State: " + game_state.ToString();
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~GAME STATE CHECKS~~~~~~~~~~~~~~~~~~~~~~//
@@ -118,7 +167,7 @@ public class GameManager : NetworkBehaviour {
 
     private void RunDeal() {
         Debug.Log("GM: Dealing");
-        StartCoroutine(card_manager.ShuffleAndDeal());
+        card_manager.ShuffleAndDeal();
     }
 
     private IEnumerator RunFirstBet()
@@ -130,13 +179,13 @@ public class GameManager : NetworkBehaviour {
             yield return null;
         }
         betting_manager.DisableAllBetting();
-        game_state = GameState.Flop;
+        SetGameState(GameState.Flop);
     }
 
     private void RunFlop()
     {
-        Debug.Log("RunFlop");
-        StartCoroutine(card_manager.BurnAndFlop());
+        Debug.Log("RunningFlop");
+        card_manager.InvokeBurnAndFlop();
     }
 
     private IEnumerator RunSecondBet()
@@ -149,13 +198,13 @@ public class GameManager : NetworkBehaviour {
             yield return null;
         }
         betting_manager.DisableAllBetting();
-        game_state = GameState.Turn;
+        SetGameState(GameState.Turn);
     }
 
     private void RunTurn()
     {
         Debug.Log("RunTurn");
-        StartCoroutine(card_manager.BurnAndTurn());
+        card_manager.InvokeBurnAndTurn();
     }
 
     private IEnumerator RunThirdBet()
@@ -168,13 +217,13 @@ public class GameManager : NetworkBehaviour {
             yield return null;
         }
         betting_manager.DisableAllBetting();
-        game_state = GameState.River;
+        SetGameState(GameState.River);
     }
 
     private void RunRiver()
     {
         Debug.Log("RunRiver");
-        StartCoroutine(card_manager.BurnAndRiver());
+        card_manager.InvokeBurnAndRiver();
     }
 
     private IEnumerator RunFourthBet()
@@ -187,14 +236,14 @@ public class GameManager : NetworkBehaviour {
             yield return null;
         }
         betting_manager.DisableAllBetting();
-        game_state = GameState.Payout;
+        SetGameState(GameState.Payout);
     }
 
     private void RunPayout()
     {
         Debug.Log("RunPayout");
         payout_manager.RunPayout();
-        game_state = GameState.Reset;
+        SetGameState(GameState.Reset);
     }
 
     private void RunReset()

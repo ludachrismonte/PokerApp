@@ -1,66 +1,85 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.UI;
 
-public class BettingManager : NetworkBehaviour {
+public class BettingManager : MonoBehaviour {
 
-    private GameManager game_manager;
+    private PhotonView PV;
 
-    [SyncVar] private int current_bet;
-    [SyncVar] private int current_pot;
-    [SyncVar] public int turn_id;
-    [SyncVar] public bool round_over;
-
-    public List<PokerPlayer> players;
+    private int current_bet;
+    public Text current_bet_text;
+    public int turn_id;
+    public bool round_over;
 
     // Use this for initialization
     void Start() {
-        game_manager = GetComponent<GameManager>();
+        PV = GetComponent<PhotonView>();
+
         turn_id = 0;
-        Debug.Log("Betting Manager started turn at player " + turn_id);
         ResetBets();
-        ResetHand();
     }
 
     // Update is called once per frame
     void Update() {
-        if (game_manager.IsOnBettingStage() && players.Count > 0 && (!players[turn_id].IsIn() || players[turn_id].HasCalled())) {
-            MoveToNextPlayer();
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
         }
-    }
-
-    public void InitializePlayerList(int num_registered) {
-        Debug.Log("Betting Manager is initializing player list to size " + num_registered);
-        for (int i = 0; i < num_registered; i++) {
-            players.Add(GameObject.Find("Player" + i).GetComponent<PokerPlayer>());
+        if (GameManager.game_manager.IsOnBettingStage() && GameManager.game_manager.GetNumRegistered() > 0 && (!GameManager.game_manager.AllPlayers[turn_id].IsIn() || GameManager.game_manager.AllPlayers[turn_id].HasCalled())) {
+            PV.RPC("RPC_MoveToNextPlayer", RpcTarget.All, turn_id);
         }
     }
 
     public void StartRound(int StartID) {
-        turn_id = StartID;
-        players[turn_id].RpcEnableBetting(true);
+        PV.RPC("RPC_StartRound", RpcTarget.All, StartID);
     }
 
-    private void MoveToNextPlayer()
+    [PunRPC]
+    public void RPC_StartRound(int StartID)
     {
-        players[turn_id].RpcEnableBetting(false);
-        turn_id++;
-        if (turn_id == game_manager.GetNumRegistered())
+        turn_id = StartID;
+        GameManager.game_manager.AllPlayers[turn_id].RpcEnableBetting(true);
+    }
+
+    [PunRPC]
+    private void RPC_TellMasterToMoveToNextPlayer()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+        PV.RPC("RPC_MoveToNextPlayer", RpcTarget.All, turn_id);
+    }
+
+    [PunRPC]
+    private void RPC_MoveToNextPlayer(int MasterCurrentTurnID)
+    {
+        DisableAllBetting();
+        turn_id = MasterCurrentTurnID + 1;
+        if (turn_id == GameManager.game_manager.GetNumRegistered())
         {
             turn_id = 0;
         }
-        if (!players[turn_id].HasCalled()) {
-            players[turn_id].RpcEnableBetting(true);
+        if (!GameManager.game_manager.AllPlayers[turn_id].HasCalled()) {
+            GameManager.game_manager.AllPlayers[turn_id].RpcEnableBetting(true);
         }
         Debug.Log("Betting Manager moved turn to player " + turn_id);
     }
 
+    [PunRPC]
+    private void RPC_SetCurrentBet(int amt)
+    {
+        current_bet = amt;
+        current_bet_text.text = "Current Bet: " + current_bet.ToString();
+    }
+
     public bool CheckIfEveryoneIsDone() {
         round_over = true;
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < GameManager.game_manager.GetNumRegistered(); i++)
         {
-            if (players[i].IsIn() && !players[i].HasCalled()) {
+            if (GameManager.game_manager.AllPlayers[i].IsIn() && !GameManager.game_manager.AllPlayers[i].HasCalled()) {
                 round_over = false;
             }
         }
@@ -68,56 +87,45 @@ public class BettingManager : NetworkBehaviour {
     }
 
     public void DisableAllBetting() {
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < GameManager.game_manager.GetNumRegistered(); i++)
         {
-            players[i].RpcEnableBetting(false);
+            GameManager.game_manager.AllPlayers[i].RpcEnableBetting(false);
         }
     }
 
     public void ResetBets()
     {
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < GameManager.game_manager.GetNumRegistered(); i++)
         {
-            players[i].ResetBets();
+            GameManager.game_manager.AllPlayers[i].ResetBets();
         }
         round_over = false;
-        current_bet = 0;
+        PV.RPC("RPC_SetCurrentBet", RpcTarget.All, 0);
     }
 
-    public void ResetAllExcept(int ID)
+    [PunRPC]
+    public void RPC_ResetAllExcept(int ID)
     {
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < GameManager.game_manager.GetNumRegistered(); i++)
         {
-            if (players[i].GetID() != ID) {
-                players[i].ResetBets();
+            if (GameManager.game_manager.AllPlayers[i].GetID() != ID) {
+                GameManager.game_manager.AllPlayers[i].ResetBets();
             }
         }
     }
 
     public void ResetHand()
     {
-        current_pot = 0;
+        PotManager.pot_manager.SetPot(0);
     }
 
     public int GetTurnID() {
         return turn_id;
     }
 
-    //~~~~~~~~~~~~POT CONTROL FUNCTIONS~~~~~~~~~~~//
-
     public int GetCurrentBet()
     {
         return current_bet;
-    }
-
-    public int GetPot()
-    {
-        return current_pot;
-    }
-
-    public void AddToPot(int amt)
-    {
-        current_pot += amt;
     }
 
     //~~~~~~~~~~~~~~ACTIONS~~~~~~~~~~~~~~//
@@ -128,8 +136,8 @@ public class BettingManager : NetworkBehaviour {
             return false;
         }
 
-        current_pot += current_bet;
-        MoveToNextPlayer();
+        PotManager.pot_manager.AddToPot(current_bet);
+        PV.RPC("RPC_TellMasterToMoveToNextPlayer", RpcTarget.MasterClient);
         return true;
     }
 
@@ -147,10 +155,10 @@ public class BettingManager : NetworkBehaviour {
             return false;
         }
 
-        current_bet = amount;
-        current_pot += amount;
-        ResetAllExcept(ID);
-        MoveToNextPlayer();
+        PV.RPC("RPC_SetCurrentBet", RpcTarget.All, amount);
+        PotManager.pot_manager.AddToPot(current_bet);
+        PV.RPC("RPC_ResetAllExcept", RpcTarget.All, ID);
+        PV.RPC("RPC_TellMasterToMoveToNextPlayer", RpcTarget.MasterClient);
         return true;
     }
 
@@ -168,7 +176,7 @@ public class BettingManager : NetworkBehaviour {
             return false;
         }
 
-        MoveToNextPlayer();
+        PV.RPC("RPC_TellMasterToMoveToNextPlayer", RpcTarget.MasterClient);
         return true;
     }
 }
